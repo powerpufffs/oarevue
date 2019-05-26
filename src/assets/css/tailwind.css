@@ -1,0 +1,33 @@
+@tailwind preflight;
+@tailwind components;
+@tailwind utilities;
+
+/* Layout widths */
+.w-sidebar {
+    width: 330px;
+}
+
+.bg-oBlue {
+    background-color: #ECF0F6;
+}
+.bg-oLight {
+    background-color: #293036;
+}
+.bg-oDark {
+    background-color: #20282E;
+}
+.bg-oSelect {
+    background-color: #323D44;
+}
+
+.center, .centerX, .centerY {
+    display: flex;
+    justify-content: center,
+}
+.centerX {
+    display: flex;
+    justify-content: center;
+}
+.centerY {
+    align-items: center;
+}
