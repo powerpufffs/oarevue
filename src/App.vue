@@ -1,16 +1,39 @@
 <template>
-  <div id="app" class="w-full h-full">
-    <router-view />
+  <div id="app" class="w-full h-full flex flex-row font-sans">
+    <Sidebar class="relative ">
+        <div class="text-white h-20 text-3xl pt-4 centerX">OARE Database</div>
+        <div class="bg-oSelect h-8 p-2">
+          <input type="text" placeholder="Search..." class="block w-full h-full box-border rounded">
+        </div>
+        <div class="bg-oDark pl-4 py-1 centerY text-lg text-blue-100 uppercase ">Current Directory</div>
+        <div class=""></div>
+        <div class="absolute block bottom-0 w-full">
+            <div class="bg-oDark bottom-0 box-border pl-4 py-1 text-lg text-blue-100 uppercase w-full">Site Information</div>
+            <div class="h-24 flex flex-col justify-evenly text-gray-500">
+              <div class="h-1/2 pl-4 hover:bg-gray-400 centerY">
+                <img src="../static/info.svg" class="colorSvg">
+                <span class="pl-3">About</span>
+              </div>
+              <div class="h-1/2 pl-4 hover:bg-gray-400 centerY">
+                <img src="../static/settings.svg" class="colorSvg">
+                <span class="pl-3">Settings</span>
+              </div>
+            </div>
+        </div>
+    </Sidebar>
+    <div class="flex-grow bg-oBlue">
+      <router-view />
+    </div>
   </div>
 </template>
 
 <script>
-import Home from './components/Header'
+import Sidebar from './components/Sidebar'
 
 export default {
   name: 'app',
   components: {
-    Home,
+    Sidebar,
   }
 }
 </script>

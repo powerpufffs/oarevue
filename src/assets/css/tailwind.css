@@ -4,7 +4,7 @@
 
 /* Layout widths */
 .w-sidebar {
-    width: 330px;
+    width: 750px;
 }
 
 .bg-oBlue {
@@ -30,4 +30,18 @@
 }
 .centerY {
     align-items: center;
+}
+
+.box-border {
+    box-sizing: border-box;
+}
+.justify-evenly {
+    justify-content: space-evenly;
+}
+.h-1\/2 {
+    height: 50%;
+}
+
+.colorSvg {
+    filter: invert(50%) sepia(0%) saturate(1195%) hue-rotate(147deg) brightness(97%) contrast(84%);
 }

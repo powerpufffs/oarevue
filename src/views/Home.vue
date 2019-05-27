@@ -1,37 +1,32 @@
 <template>
-    <div class="flex flex-row w-full h-full">
-        <Sidebar>
-            <div class="text-white h-24 text-3xl">OARE Database</div>
-            <div class="bg-oSelect h-10">
-                <input type="text" class="w-5/6 h-5/6">
-            </div>
-            <div class="bg-oDark pl-4 py-1 centerY text-lg text-blue-200 uppercase ">Current Directory</div>
-            <div class=""></div>
-            <div class="bg-oDark pl-4 py-1 centerY text-lg text-blue-200 uppercase ">Site Information</div>
-            <div class="">
-                About
-            </div>
-            <div class="">Settings</div>
-        </Sidebar>
-        <div class="flex flex-col bg-oBlue w-full">
-            <Header class="h-24">
-            </Header>
-            <div class="bg-white mx-8 h-full rounded-lg">
-                hi
-            </div>
-        </div>
-    </div>
+   <div class="flex flex-col m-auto w-11/12">
+       <Header class="mt-10">
+           <div class="text-3xl font-sans">Welcome</div>
+           <div class="ml-6 text-xl text-gray-600">to the Old Assyrian Research Environment Database</div>
+       </Header>
+       <ContentView class="mt-2 font-sans">
+           <h1 class="text-2xl text-gray-700">Introduction</h1>
+           <p class="text-base text-gray-600">
+               Lorem ipsum dolor sit amet consectetur, adipisicing elit. Repudiandae 
+               repellendus distinctio accusantium soluta quidem ipsa nobis sapiente 
+               libero veritatis nesciunt fuga, perferendis omnis rerum et iusto esse iste beatae voluptas, 
+               harum exercitationem vitae quisquam dicta cupiditate excepturi? Consectetur, et illo?
+           </p>
+       </ContentView>
+   </div>
 </template>
 
 <script>
 import Sidebar from '../components/Sidebar'
 import Header from '../components/Header'
+import ContentView from '../components/ContentView'
 
 export default {
     name: 'home',
     components: {
         Sidebar,
-        Header
+        Header,
+        ContentView,
     }
 }
 </script>
