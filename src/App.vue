@@ -21,7 +21,7 @@
             </div>
         </div>
     </Sidebar>
-    <div class="flex-grow bg-oBlue">
+    <div class="flex-grow bg-oBlue px-4">
       <router-view />
     </div>
   </div>
