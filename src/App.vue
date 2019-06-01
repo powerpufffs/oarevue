@@ -7,6 +7,7 @@
         </div>
         <div class="bg-oDark pl-4 py-1 centerY text-lg text-blue-100 uppercase ">Current Directory</div>
         <div class=""></div>
+        <TreeView class="text-gray-400 text-l pl-2 py-2"/>
         <div class="absolute block bottom-0 w-full">
             <div class="bg-oDark bottom-0 box-border pl-4 py-1 text-lg text-blue-100 uppercase w-full">Site Information</div>
             <div class="h-24 flex flex-col justify-evenly text-gray-500">
@@ -29,11 +30,13 @@
 
 <script>
 import Sidebar from './components/Sidebar'
+import TreeView from './components/TreeView'
 
 export default {
   name: 'app',
   components: {
     Sidebar,
+    TreeView,
   }
 }
 </script>
