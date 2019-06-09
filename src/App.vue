@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="w-full h-full flex flex-row font-sans">
-    <Sidebar class="relative ">
+    <Sidebar class="relative flex-grow-0 max-w-sm">
         <div class="text-white h-20 text-3xl pt-4 centerX">OARE Database</div>
         <div class="bg-oSelect h-8 p-2">
           <input type="text" placeholder="Search..." class="block w-full h-full box-border rounded">
