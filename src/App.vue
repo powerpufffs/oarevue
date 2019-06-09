@@ -1,28 +1,15 @@
 <template>
-  <div id="app" class="w-full h-full flex flex-row font-sans">
-    <Sidebar class="relative flex-grow-0 max-w-sm">
-        <div class="text-white h-20 text-3xl pt-4 centerX">OARE Database</div>
-        <div class="bg-oSelect h-8 p-2">
-          <input type="text" placeholder="Search..." class="block w-full h-full box-border rounded">
-        </div>
-        <div class="bg-oDark pl-4 py-1 centerY text-lg text-blue-100 uppercase ">Current Directory</div>
-        <div class=""></div>
-        <TreeView class="text-gray-400 text-l pl-2 py-2"/>
-        <div class="absolute block bottom-0 w-full">
-            <div class="bg-oDark bottom-0 box-border pl-4 py-1 text-lg text-blue-100 uppercase w-full">Site Information</div>
-            <div class="h-24 flex flex-col justify-evenly text-gray-500">
-              <div class="h-1/2 pl-4 hover:bg-gray-400 centerY">
-                <img src="../static/info.svg" class="colorSvg">
-                <span class="pl-3">About</span>
-              </div>
-              <div class="h-1/2 pl-4 hover:bg-gray-400 centerY">
-                <img src="../static/settings.svg" class="colorSvg">
-                <span class="pl-3">Settings</span>
-              </div>
-            </div>
-        </div>
+  <div id="app" class="w-full h-full font-sans text-white">
+    <Sidebar class="sidebar">
+      <div class="logo text-white">OARE Development</div>
+      <div class="searchBar bg-select">Search</div>
+      <div class="header1 bg-oDark text-oSelect">CURRENT DIRECTORY</div>
+      <TreeView class="tree overflow-y-scroll"/>
+      <div class="header2 bg-oDark text-oSelect">SITE INFORMATION</div>
+      <div class="about">About</div>
+      <div class="setting">Settings</div>
     </Sidebar>
-    <div class="flex-grow bg-oBlue px-4">
+    <div class="mainBody">
       <router-view />
     </div>
   </div>
@@ -49,4 +36,39 @@ body, html {
   padding: 0;
 }
 
+::-webkit-scrollbar {
+  width: 0px;  /* Remove scrollbar space */
+  background: transparent;  /* Optional: just make scrollbar invisible */
+}
+</style>
+
+<style scoped>
+  #app {
+    display: grid;
+    grid-template-columns:
+    22rem 1fr;
+    grid-template-areas:
+    "sidebar body";
+  }
+  .sidebar{
+    grid-area: sidebar;
+    background-color:rgb(34, 44, 50);
+    display: grid;
+    grid-template:
+      "logo"          118px
+      "searchBar"     60px
+      "header1"       38px
+      "tree"          minmax(100px, 600px)
+      "header2"       38px
+      "about"         50px
+      "setting"       50px
+  }
+  .body { grid-area: body; } 
+  .logo { grid-area: logo; }
+  .searchBar { grid-area: searchBar; }
+  .header1 { grid-area: header1; }
+  .tree { grid-area: tree; }
+  .header2 { grid-area: header2; }
+  .about { grid-area: about; }
+  .setting { grid-area: setting; }
 </style>

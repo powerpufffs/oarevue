@@ -1,6 +1,11 @@
 <template>
   <div class="tree">
-    <div :style="indent" @click="toggleChildren">{{ name }}</div>
+    <div :class="[
+      indent,
+      hasChildren ? 'caret' : '',
+      ]"
+      @click="toggleChildren">{{ name }}
+    </div>
     <div v-if="showChildren">
       <tree 
         v-for="(child, index) in children" 
@@ -23,7 +28,12 @@
     name: 'tree',
     computed: {
       indent() {
-        return { transform: `translate(${this.depth * 20}px)` }
+        return { 
+          transform: `translate(${this.depth * 20}px)`,
+        }
+      },
+      hasChildren(child) {
+        return child.count > 0 ? 'caret' : 'caret-down'
       }
     },
     methods: {
@@ -33,3 +43,19 @@
     }
   }
 </script>
+
+<style scoped>
+  .caret {
+    cursor: pointer;
+    user-select: none;
+  }
+  .caret::before() {
+    content: "\25B6";
+    color: black;
+    display: inline-block;
+    margin-right: 6px;
+  }
+  .caret-down::before() {
+    transform: rotate(90deg);
+  }
+</style>

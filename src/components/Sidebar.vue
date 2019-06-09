@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-oLight w-sidebar">
+  <div class="bg-oLight">
     <slot></slot>    
   </div>
 </template>

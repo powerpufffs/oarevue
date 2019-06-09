@@ -1,4 +1,5 @@
-export const response = [{
+export const response = [
+    {
         id: 1,
         name: "Sign list",
         children: []
