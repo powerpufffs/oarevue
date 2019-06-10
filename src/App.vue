@@ -3,11 +3,23 @@
     <Sidebar class="sidebar">
       <div class="logo text-white">OARE Development</div>
       <div class="searchBar bg-select">Search</div>
-      <div class="header1 bg-oDark text-oSelect">CURRENT DIRECTORY</div>
+      <div class="header1 bg-oDark text-oSelect text-xl pl-4 flex items-center">CURRENT DIRECTORY</div>
       <TreeView class="tree overflow-y-scroll"/>
-      <div class="header2 bg-oDark text-oSelect">SITE INFORMATION</div>
-      <div class="about">About</div>
-      <div class="setting">Settings</div>
+      <div class="header2 bg-oDark text-oSelect text-xl pl-4 flex items-center">SITE INFORMATION</div>
+      <div class="utilities flex flex-col">
+        <UtilityCell 
+          class="flex items-center flex-grow pl-4 hover:bg-oSelect"
+          title="About"
+        >
+          <img src="../static/info.svg">
+        </UtilityCell>
+        <UtilityCell 
+          class="flex items-center flex-grow pl-4 hover:bg-oSelect"
+          title="Settings"
+        >
+          <img src="../static/settings.svg">
+        </UtilityCell>
+      </div>
     </Sidebar>
     <div class="mainBody">
       <router-view />
@@ -18,12 +30,14 @@
 <script>
 import Sidebar from './components/Sidebar'
 import TreeView from './components/TreeView'
+import UtilityCell from './components/UtilityCell'
 
 export default {
   name: 'app',
   components: {
     Sidebar,
     TreeView,
+    UtilityCell,
   }
 }
 </script>
@@ -60,8 +74,7 @@ body, html {
       "header1"       38px
       "tree"          minmax(100px, 600px)
       "header2"       38px
-      "about"         50px
-      "setting"       50px
+      "utilities"     100px
   }
   .body { grid-area: body; } 
   .logo { grid-area: logo; }
@@ -69,6 +82,5 @@ body, html {
   .header1 { grid-area: header1; }
   .tree { grid-area: tree; }
   .header2 { grid-area: header2; }
-  .about { grid-area: about; }
-  .setting { grid-area: setting; }
+  .utilities { grid-area: utilities; }
 </style>

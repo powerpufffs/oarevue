@@ -1,20 +1,22 @@
 <template>
-  <div class="tree">
-    <div :class="[
-      indent,
-      hasChildren ? 'caret' : '',
-      ]"
-      @click="toggleChildren">{{ name }}
+  <div class="tree text-xl">
+    <div class="selectableField py-1 pl-4 flex items-center">
+      <div 
+        @click="toggleChildren"
+        :class="[{'caret': hasChildren}, {'caret-down': hasChildren && showChildren}]"
+      >
+        {{ name }}
+      </div>
     </div>
-    <div v-if="showChildren">
+    <ul v-if="showChildren">
       <tree 
         v-for="(child, index) in children" 
         :children="child.children" 
         :name="child.name"
         :depth="depth + 1"
         :key="index"
-    />
-    </div>
+      />
+    </ul>
   </div>
 </template>
 <script>
@@ -32,8 +34,8 @@
           transform: `translate(${this.depth * 20}px)`,
         }
       },
-      hasChildren(child) {
-        return child.count > 0 ? 'caret' : 'caret-down'
+      hasChildren() {
+        return this.children.length > 0
       }
     },
     methods: {
@@ -47,15 +49,22 @@
 <style scoped>
   .caret {
     cursor: pointer;
-    user-select: none;
+    margin-right: 100px;
   }
-  .caret::before() {
+  .caret::before {
     content: "\25B6";
-    color: black;
-    display: inline-block;
-    margin-right: 6px;
+    color: white;
+    margin-right: 5px;
   }
-  .caret-down::before() {
+  .caret-down::before {
+    content: "\25B6";
     transform: rotate(90deg);
+  }
+  .selectableField:hover {
+    background-color: #323D44;
+  }
+  ul {
+    padding: 0;
+    margin: 0 0 0 1em;
   }
 </style>

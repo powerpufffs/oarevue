@@ -7,20 +7,22 @@
     width: 750px;
 }
 
-.bg-oBlue {
-    background-color: #ECF0F6;
-}
-.bg-oLight {
-    background-color: #3B4E51;
-}
-.bg-oDark {
-    background-color: #20282E;
-}
-.bg-oSelect {
-    background-color: #323D44;
-}
-.text-oSelect {
-    color: #3B4E51;
+@variants hover, focus {
+    .bg-oBlue {
+        background-color: #ECF0F6;
+    }
+    .bg-oLight {
+        background-color: #3B4E51;
+    }
+    .bg-oDark {
+        background-color: #20282E;
+    }
+    .bg-oSelect {
+        background-color: #323D44;
+    }
+    .text-oSelect {
+        color: #3B4E51;
+    }
 }
 
 .center, .centerX, .centerY {
