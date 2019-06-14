@@ -3,22 +3,21 @@
     <div class="selectableField py-1 pl-4 flex items-center">
       <div 
         @click="toggleChildren"
-        :class="[{'caret': hasChildren}, {'caret-down': hasChildren && showChildren}]"
+        :class="[ hasChildren ? (showChildren ? 'caret-down' : 'caret') : '']"
       >
         {{ name }}
       </div>
     </div>
-    <ul v-if="showChildren">
-      <transition name="fade">
-        <tree 
-          v-for="(child) in children" 
-          :children="child.children" 
-          :name="child.name"
-          :depth="depth + 1"
-          :key="child"
-        />
-      </transition>
-    </ul>
+    <transition-group name="list" tag="ul">
+      <tree 
+        v-if="showChildren"
+        v-for="(child) in children" 
+        :children="child.children" 
+        :name="child.name"
+        :depth="depth + 1"
+        :key="child"
+      />
+    </transition-group>
   </div>
 </template>
 <script>
@@ -38,7 +37,7 @@
       },
       hasChildren() {
         return this.children.length > 0
-      }
+      },
     },
     methods: {
       toggleChildren() {
@@ -54,12 +53,17 @@
     margin-right: 100px;
   }
   .caret::before {
+    display: inline-block;
     content: "\25B6";
+    font-size: 15px;
     color: white;
     margin-right: 5px;
   }
   .caret-down::before {
-    content: "\25B6";
+    display: inline-block;
+    content:'\25B6';
+    font-size: 15px;
+    margin-right: 5px;
     transform: rotate(90deg);
   }
   .selectableField:hover {
@@ -69,10 +73,11 @@
     padding: 0;
     margin: 0 0 0 1em;
   }
-  .fade-enter-active, .fade-leave-active {
-    transition: opacity .5s;
+  .list-enter-active, .list-leave-active {
+    transition: all 0.2s ease-out;
   }
-  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  .list-enter, .list-leave-active {
     opacity: 0;
+    transform: translateY(-30px);
   }
 </style>

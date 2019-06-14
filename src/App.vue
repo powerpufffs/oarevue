@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="w-full h-full font-sans text-white">
     <Sidebar class="sidebar">
-      <div class="logo text-white">OARE Development</div>
+      <div class="logo text-white text-4xl flex justify-center items-center">OARE Development</div>
       <div class="searchBar bg-select">Search</div>
       <div class="header1 bg-oDark text-oSelect text-xl pl-4 flex items-center">CURRENT DIRECTORY</div>
       <TreeView class="tree overflow-y-scroll"/>
@@ -21,8 +21,8 @@
         </UtilityCell>
       </div>
     </Sidebar>
-    <div class="mainBody">
-      <router-view />
+    <div class="mainBody bg-oBlue">
+      <router-view class="mx-8"/>
     </div>
   </div>
 </template>
