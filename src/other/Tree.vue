@@ -9,13 +9,15 @@
       </div>
     </div>
     <ul v-if="showChildren">
-      <tree 
-        v-for="(child, index) in children" 
-        :children="child.children" 
-        :name="child.name"
-        :depth="depth + 1"
-        :key="index"
-      />
+      <transition name="fade">
+        <tree 
+          v-for="(child) in children" 
+          :children="child.children" 
+          :name="child.name"
+          :depth="depth + 1"
+          :key="child"
+        />
+      </transition>
     </ul>
   </div>
 </template>
@@ -66,5 +68,11 @@
   ul {
     padding: 0;
     margin: 0 0 0 1em;
+  }
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
   }
 </style>
