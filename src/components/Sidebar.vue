@@ -7,8 +7,10 @@
 <script>
 export default {
   name: 'sidebar',
+  data
 }
 </script>
 
 <style>
+
 </style>

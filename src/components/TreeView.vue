@@ -1,7 +1,7 @@
 <template>
 	<div id="treeView">
 		<Tree 
-			v-for="(parent, index) in data"
+			v-for="(parent, index) in data.data"
 			:name='parent.name'
 			:children='parent.children'
 			:depth='0'
@@ -26,14 +26,13 @@ export default {
 		Tree
 	},
 	async created() {
-		this.data = response
-		// try {
-		// 	this.data = await axios.get('https://oare-test.herokuapp.com/api/categories')
-		// 	console.log('hi')
-		// } catch (error) {
-		// 	console.log("didn't work")
-		// 	console.log(error)
-		// }
+		// this.data = response
+		try {
+			this.data = await axios.get('https://oare-test.herokuapp.com/api/categories')
+		} catch (error) {
+			console.log("didn't work")
+			console.log(error)
+		}
 	}
 }
 </script>

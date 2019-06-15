@@ -1,6 +1,6 @@
 <template>
-  <div class="tree text-xl">
-    <div class="selectableField py-1 pl-4 flex items-center">
+  <div class="Tree text-xl">
+    <div class="selectableField pl-4 flex items-center">
       <div 
         @click="toggleChildren"
         :class="[ hasChildren ? (showChildren ? 'caret-down' : 'caret') : '']"
@@ -9,7 +9,7 @@
       </div>
     </div>
     <transition-group name="list" tag="ul">
-      <tree 
+      <Tree 
         v-if="showChildren"
         v-for="(child) in children" 
         :children="child.children" 
@@ -28,13 +28,8 @@
         showChildren: false 
       }
     },
-    name: 'tree',
+    name: 'Tree',
     computed: {
-      indent() {
-        return { 
-          transform: `translate(${this.depth * 20}px)`,
-        }
-      },
       hasChildren() {
         return this.children.length > 0
       },
