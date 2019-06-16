@@ -1,11 +1,9 @@
 <template>
   <div id="app" class="w-full h-full font-sans text-white">
-    <Sidebar class="sidebar">
-      <div class="logo text-white text-4xl flex justify-center items-center">OARE Development</div>
-      <div class="searchBar bg-select">Search</div>
-      <div class="header1 bg-oDark text-oSelect text-xl pl-4 flex items-center">CURRENT DIRECTORY</div>
-      <TreeView class="tree overflow-y-scroll"/>
-      <div class="header2 bg-oDark text-oSelect text-xl pl-4 flex items-center">SITE INFORMATION</div>
+    <Sidebar class="sidebar" :filteredList="filteredList" :search="filterList($event)" >
+      <Section title="CURRENT DIRECTORY"/>
+      <TreeView class="tree overflow-y-scroll" :data="data.data"/>
+      <Section title="SITE INFORMATION" />
       <div class="utilities flex flex-col">
         <UtilityCell 
           class="flex items-center flex-grow pl-4 hover:bg-oSelect"
@@ -31,6 +29,8 @@
 import Sidebar from './components/Sidebar'
 import TreeView from './components/TreeView'
 import UtilityCell from './components/UtilityCell'
+import Section from './components/Section'
+import axios from 'axios'
 
 export default {
   name: 'app',
@@ -38,7 +38,30 @@ export default {
     Sidebar,
     TreeView,
     UtilityCell,
-  }
+    Section,
+  },
+  data() {
+    return {
+      data: [],
+      filteredList: []
+    }
+  },
+  methods: {
+    filterList: text => {
+      console.log("trying again")
+      console.log(this.data.data)
+      this.filteredList = this.data.data.filter( leaf => leaf.name.includes(text) )
+    },
+  },
+  async created() {
+		// this.data = response
+		try {
+			this.data = await axios.get('https://oare-test.herokuapp.com/api/categories')
+		} catch (error) {
+			console.log("didn't work")
+			console.log(error)
+		}
+	}
 }
 </script>
 
@@ -67,20 +90,7 @@ body, html {
   .sidebar{
     grid-area: sidebar;
     background-color:rgb(34, 44, 50);
-    display: grid;
-    grid-template:
-      "logo"          118px
-      "searchBar"     60px
-      "header1"       38px
-      "tree"          minmax(100px, 600px)
-      "header2"       38px
-      "utilities"     100px
   }
   .body { grid-area: body; } 
-  .logo { grid-area: logo; }
-  .searchBar { grid-area: searchBar; }
-  .header1 { grid-area: header1; }
-  .tree { grid-area: tree; }
-  .header2 { grid-area: header2; }
-  .utilities { grid-area: utilities; }
+  .sidebar { grid-area: sidebar; }
 </style>
