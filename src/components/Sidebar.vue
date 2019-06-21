@@ -7,15 +7,6 @@
         v-model="searchText" 
       />
     </div>
-    <transition-group name="results" tag="div">
-      <div v-if="showSearchResults" :key="1"> 
-        <Section title="SEARCH RESULTS"/>
-        <div v-for="(result, index) in results"
-          :name="name"
-          :key="index"
-        />
-      </div>
-    </transition-group>
     <slot></slot>    
   </div>
 </template>
@@ -42,7 +33,7 @@ export default {
     },
   },
   watch: {
-    searchText: newValue => {
+    searchText: function(newValue) {
       this.$emit('search', newValue)
     }
   }
@@ -53,11 +44,4 @@ export default {
   .input {
     height: 50px;
   } 
-  .results-enter-active, .results-leave-active {
-    transition: all 0.2s ease-out;
-  }
-  .results-enter, .results-leave-active {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
 </style>

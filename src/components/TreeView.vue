@@ -12,7 +12,6 @@
 
 <script>
 import Tree from '../other/Tree'
-import { response } from '../other/treeData'
 
 export default {
 	name: 'treeView',

@@ -1,8 +1,16 @@
 <template>
   <div id="app" class="w-full h-full font-sans text-white">
-    <Sidebar class="sidebar" :filteredList="filteredList" :search="filterList($event)" >
+    <Sidebar class="sidebar" :filteredList="filteredList" @search="filterList">
+      <transition-group name="results" tag="div">
+        <div v-if="showSearchResults" :key="1"> 
+          <Section title="SEARCH RESULTS"/>
+          <div v-for="(result, index) in filteredList" :key="index" class="pl-4 text-xl">
+            {{ result.name }}
+          </div>
+        </div>
+      </transition-group>
       <Section title="CURRENT DIRECTORY"/>
-      <TreeView class="tree overflow-y-scroll" :data="data.data"/>
+      <TreeView class="tree overflow-y-scroll" :data="data"/>
       <Section title="SITE INFORMATION" />
       <div class="utilities flex flex-col">
         <UtilityCell 
@@ -46,17 +54,26 @@ export default {
       filteredList: []
     }
   },
+  computed: {
+    showSearchResults() {
+      return this.filteredList.length > 0
+    }
+  },
   methods: {
-    filterList: text => {
-      console.log("trying again")
-      console.log(this.data.data)
-      this.filteredList = this.data.data.filter( leaf => leaf.name.includes(text) )
+    filterList(text) {
+      console.log(text)
+      if (text === '') { 
+        this.filteredList = []
+        return 
+      }
+      console.log(this.data.filter( leaf => leaf.name.includes(text) ))
+      this.filteredList = this.data.filter( leaf => leaf.name.includes(text) || leaf.name.toLowerCase().includes(text.toLowerCase()) )
     },
   },
   async created() {
-		// this.data = response
 		try {
-			this.data = await axios.get('https://oare-test.herokuapp.com/api/categories')
+      let data = await axios.get('https://oare-test.herokuapp.com/api/categories')
+      this.data = data.data
 		} catch (error) {
 			console.log("didn't work")
 			console.log(error)
@@ -93,4 +110,11 @@ body, html {
   }
   .body { grid-area: body; } 
   .sidebar { grid-area: sidebar; }
+  .results-enter-active, .results-leave-active {
+    transition: all 0.2s ease-out;
+  }
+  .results-enter, .results-leave-active {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
 </style>
