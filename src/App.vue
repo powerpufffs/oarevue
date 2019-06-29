@@ -27,8 +27,16 @@
         </UtilityCell>
       </div>
     </Sidebar>
-    <div class="mainBody bg-oBlue">
-      <router-view class="mx-8"/>
+    <div class="mainBody bg-oBlue p-3">
+      <div class="flex flex-col h-full m-auto">
+       <Header class="mt-10">
+           <div class="text-3xl font-sans text-4xl text-gray-900">Welcome</div>
+           <div class="ml-6 text-xl text-gray-600">to the Old Assyrian Research Environment Database</div>
+       </Header>
+       <ContentView class="mt-2 flex-grow font-sans">
+           <router-view class="mx-8"/>
+       </ContentView>
+      </div>
     </div>
   </div>
 </template>
@@ -37,6 +45,8 @@
 import Sidebar from './components/Sidebar'
 import TreeView from './components/TreeView'
 import UtilityCell from './components/UtilityCell'
+import Header from './components/Header'
+import ContentView from './components/ContentView'
 import Section from './components/Section'
 import axios from 'axios'
 
@@ -47,6 +57,8 @@ export default {
     TreeView,
     UtilityCell,
     Section,
+    ContentView,
+    Header
   },
   data() {
     return {
@@ -72,7 +84,7 @@ export default {
   },
   async created() {
 		try {
-      let data = await axios.get('https://oare-test.herokuapp.com/api/categories')
+      let data = await axios.get('https://oare-test.herokuapp.com/api/hierarchyCategories')
       this.data = data.data
 		} catch (error) {
 			console.log("didn't work")

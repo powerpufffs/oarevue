@@ -1,28 +1,36 @@
 <template>
-  <div class="Tree text-xl">
-    <div class="selectableField pl-4 flex items-center">
+  <div class="Tree text-xl" >
+    <div class="selectableField pl-4 flex items-center cursor-pointer" @click="toggleChildren(); goToView()">
       <div 
-        @click="toggleChildren"
         :class="[ hasChildren ? (showChildren ? 'caret-down' : 'caret') : '']"
       >
-        {{ name }}
+        {{ data.name }}
       </div>
     </div>
-    <transition-group name="list" tag="ul">
+       
+    <transition-group name="list" tag="ul" v-if="showChildren">
       <Tree 
-        v-if="showChildren"
-        v-for="(child) in children" 
-        :children="child.children" 
-        :name="child.name"
+        v-for="(child) in data.children" 
+        :data="child"
+        :key="child.id"
         :depth="depth + 1"
-        :key="child"
       />
     </transition-group>
   </div>
 </template>
 <script>
   export default { 
-    props: [ 'name', 'children', 'depth' ],
+    // props: [ 'name', 'children', 'depth', 'type' ],
+    props: {
+      data: {
+        type: Object,
+        required: true
+      },
+      depth: {
+        type: Number,
+        required: true
+      }
+    },
     data() {
       return { 
         showChildren: false 
@@ -31,12 +39,18 @@
     name: 'Tree',
     computed: {
       hasChildren() {
-        return this.children.length > 0
+        return this.data.children.length > 0
       },
     },
     methods: {
       toggleChildren() {
         this.showChildren = !this.showChildren;
+      },
+      
+      goToView() {
+        if(this.data.type === 'dictionaryWord') {
+          this.$router.push({name: 'dictionary', params: { wordId: Number(this.data.id) }})
+        }
       }
     }
   }
