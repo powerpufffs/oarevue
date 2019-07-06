@@ -50,6 +50,8 @@
       goToView() {
         if(this.data.type === 'dictionaryWord') {
           this.$router.push({name: 'dictionary', params: { wordId: Number(this.data.id) }})
+        } else if(this.data.type === 'text_text') {
+          this.$router.push({name: 'epigraphies', params: { textId: Number(this.data.textId) }})
         }
       }
     }

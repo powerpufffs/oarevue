@@ -59,7 +59,6 @@ export default {
       let result = await axios.get('https://oare-test.herokuapp.com/api/dictionaryWords/'
         + this.wordId)
       let data = result.data
-      console.log(data)
       this.word = data.word
       this.definitions = []
       this.forms = []
