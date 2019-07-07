@@ -1,6 +1,6 @@
 <template>
-  <div id="app" class="w-full h-full font-sans text-white">
-    <Sidebar class="sidebar" :filteredList="filteredList" @search="filterList">
+<!-- class="w-full h-full font-sans text-white" -->
+    <!-- <Sidebar class="sidebar" :filteredList="filteredList" @search="filterList">
       <transition-group name="results" tag="div">
         <div v-if="showSearchResults" :key="1"> 
           <Section title="SEARCH RESULTS"/>
@@ -37,12 +37,79 @@
            <router-view class="mx-8"/>
        </ContentView>
       </div>
-    </div>
-  </div>
+    </div> -->
+
+    <!-- <v-container fill-height>
+      <v-layout row>
+        <v-flex xs4 class="scroll-y scroll-x grey darken-3 white--text">
+          <OareSidebar>
+            <v-text-field 
+              box 
+              class="mt-2"
+              light
+              label="Search" 
+              v-model="searchText"
+              background-color="white"
+            />
+            <v-treeview 
+              :active.sync="active"
+              activatable
+              active-class="primary--text"
+              :items="data"
+              item-key="id"             
+              hoverable
+              open-on-click
+              transition
+              return-object
+              class="white--text"/>
+          </OareSidebar>
+        </v-flex>
+
+        <v-flex xs8>
+          <v-sheet color="#edf0f5" width="100%" light>
+            Welcome to the Old Assyrian Research Environment
+            <ContentView class="mt-2 flex-grow font-sans">
+              <router-view class="mx-8"/>
+            </ContentView>
+          </v-sheet>
+        </v-flex>
+      </v-layout>
+    </v-container> -->
+    <v-app>
+      <OareSidebar>
+        <v-text-field 
+          v-model="searchText"
+          background-color="white"
+          box 
+          class="mt-4 mx-3"
+          light
+          label="Search" 
+        />
+        <v-treeview 
+          :active.sync="active"
+          activatable
+          active-class="primary--text"
+          :items="data"
+          item-key="id"             
+          hoverable
+          open-on-click
+          transition
+          return-object
+          class="white--text"/>
+      </OareSidebar>
+      <v-content app class="blue-grey lighten-4 pt-3">
+        <span class="display-1 mx-3">Old Assyrian Research Environment Database</span>
+        <v-container class="px-3 py-3" fluid>
+          <ContentView>
+            <router-view/>
+          </ContentView>
+        </v-container>
+      </v-content>
+    </v-app>
 </template>
 
 <script>
-import Sidebar from './components/Sidebar'
+import OareSidebar from './components/OareSidebar'
 import TreeView from './components/TreeView'
 import UtilityCell from './components/UtilityCell'
 import Header from './components/Header'
@@ -53,7 +120,7 @@ import axios from 'axios'
 export default {
   name: 'app',
   components: {
-    Sidebar,
+    OareSidebar,
     TreeView,
     UtilityCell,
     Section,
@@ -62,13 +129,34 @@ export default {
   },
   data() {
     return {
+      active: [],
       data: [],
+      searchText: '',
       filteredList: []
     }
   },
   computed: {
     showSearchResults() {
       return this.filteredList.length > 0
+    },
+    selected () {
+      if (this.active.length > 0) {
+        return this.active[0]
+      }
+      return undefined
+    }
+  },
+  watch: {
+    selected() {
+      if(!this.selected) return
+      
+      let type = this.selected.type
+      if(type === 'dictionaryWord') {
+        this.$router.push({name: 'dictionary', params: {wordId: this.selected.id}})
+      } else if (type === 'textText') {
+        this.$router.push({name: 'epigraphies', 
+          params: {textId: this.selected.textId, textName: this.selected.name}})
+      }
     }
   },
   methods: {
@@ -109,7 +197,17 @@ body, html {
 </style>
 
 <style scoped>
-  #app {
+  .container {
+    margin: 0;
+    padding: 0;
+  }
+
+  .v-sheet {
+    border-radius: 0;
+  }
+
+ 
+  /* #app {
     display: grid;
     grid-template-columns:
     22rem 1fr;
@@ -128,5 +226,5 @@ body, html {
   .results-enter, .results-leave-active {
     opacity: 0;
     transform: translateY(-30px);
-  }
+  } */
 </style>

@@ -1,20 +1,25 @@
 <template>
   <div>
-    <h1 class="text-3xl text-gray-700">
-      Epigraphies
-    </h1>
-    
-    <div v-for="(lines, side) in data" :key="side">
-      <h3 class="text-2xl text-gray-700 mt-3">
-        <span class="text-gray-700">
+    <v-progress-circular
+      v-if="loading"
+      indeterminate
+    />
+
+    <div v-else>
+      <h1 class="display-1 font-weight-bold">
+        {{ textName }}
+      </h1>
+      
+      <div v-for="(lines, side) in data" :key="side">
+        <h3 class="mt-3 headline">
           {{ side }}
-        </span>
+        </h3>
         <ul>
-          <li v-for="(line, lineNum) in lines" :key="lineNum" class="text-gray-700">
+          <li v-for="(line, lineNum) in lines" :key="lineNum" class="title font-weight-regular mb-2">
             {{ lineNum }}. {{ lineText(line) }}
           </li>
         </ul>
-      </h3> 
+      </div>
     </div>
   </div>
 </template>
@@ -25,13 +30,19 @@ export default {
   name: 'EpigraphyView',
   props: {
     textId: {
+      // eslint-disable-next-line
       type: Number | String,
+      required: true
+    },
+    textName: {
+      type: String,
       required: true
     }
   },
   data() {
     return {
-      data: {}
+      data: {},
+      loading: false
     }
   },
   created () {
@@ -47,8 +58,10 @@ export default {
 
   methods: {
     async getEpigraphyInfo() {
+      this.loading = true
       let result = await axios.get('https://oare-test.herokuapp.com/api/textEpigraphies/'
         + this.textId)
+      this.loading = false
       this.data = result.data
     },
 
