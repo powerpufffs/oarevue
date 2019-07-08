@@ -1,31 +1,53 @@
 <template>
-  <v-navigation-drawer app dark px-2 class="white--text">
+  <v-navigation-drawer 
+    v-model="drawer"
+    app 
+    dark 
+    clipped 
+    px-2 
+    class="white--text"
+    :class="classes"
+  >
     <slot/>
   </v-navigation-drawer> 
 </template>
 
 <script>
-import TextField from './TextField'
-
 export default {
   name: 'OareSidebar',
-  components: {
-    TextField
+  props: {
+    openFlag: {
+      type: Number,
+      required: true
+    },
   },
   data() {
     return {
+      drawer: false,
       searchText: '',
       results: [],
+    }
+  },
+  created () {
+    if(this.$vuetify.breakpoint.lgAndUp) {
+      this.drawer = true
     }
   },
   computed: {
     showSearchResults() {
       return this.searchText != ''
     },
+    classes () {
+      let classes = []
+      if(this.$vuetify.breakpoint.lgAndUp) {
+        classes.push('pt-5')
+      }
+      return classes
+    }
   },
   watch: {
-    searchText: function(newValue) {
-      this.$emit('search', newValue)
+    openFlag () {
+      this.drawer = true
     }
   }
 }

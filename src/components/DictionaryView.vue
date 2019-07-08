@@ -1,8 +1,8 @@
 <template>
   <div>
-    <v-progress-circular 
-      v-if="loading"
+    <v-progress-linear
       indeterminate
+      v-if="loading"
     />
     <div v-else>
       <h1 class="display-1 font-weight-bold">{{ word }}</h1>
@@ -96,7 +96,3 @@ export default {
   },
 }
 </script>
-
-<style>
-
-</style>

@@ -15,7 +15,11 @@
           {{ side }}
         </h3>
         <ul>
-          <li v-for="(line, lineNum) in lines" :key="lineNum" class="title font-weight-regular mb-2">
+          <li 
+            v-for="(line, lineNum) in lines" 
+            class="title font-weight-regular mb-2"
+            :key="lineNum" 
+          >
             {{ lineNum }}. {{ lineText(line) }}
           </li>
         </ul>
