@@ -1,29 +1,35 @@
 <template>
   <div>
-    <h1 class="text-3xl text-gray-700">{{ word }}</h1>
-    <h3 class="text-2xl text-gray-700">Definitions</h3>
-    <ul>
-      <li
-        v-for="(definition, index) in definitions"
-        :key="index"
-        class="text-gray-700"
-      >
-        {{ definition.definition }} 
-      </li>
-    </ul>
+    <v-progress-linear
+      indeterminate
+      v-if="loading"
+    />
+    <div v-else>
+      <h1 class="display-1 font-weight-bold">{{ word }}</h1>
+      <h3 class="mt-3 headline">Definitions</h3>
+      <ul>
+        <li
+          v-for="(definition, index) in definitions"
+          :key="index"
+          class="title font-weight-medium"
+        >
+          {{ definition.definition }} 
+        </li>
+      </ul>
 
 
-    <h3 class="text-2xl text-gray-700 mt-3">Forms</h3>
-    <ul>
-      <li
-        v-for="(form, index) in forms"
-        :key="index"
-        class="text-gray-700"
-      >
-        {{ form.form }}: {{ spellingsList(form.spellings) }}
-      </li>
-    </ul>
-    <p class="text-base text-gray-600"></p>
+      <h3 class="mt-2 headline">Forms</h3>
+      <ul>
+        <li
+          v-for="(form, index) in forms"
+          :key="index"
+          class="title font-weight-regular mb-2"
+        >
+          <span class="font-weight-medium">{{ form.form }}: </span>
+           {{ spellingsList(form.spellings) }}
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -41,8 +47,9 @@ export default {
 
   data() {
     return {
-      forms: [],
       definitions: [],
+      forms: [],
+      loading: false,
       word: ""
     }
   },
@@ -56,8 +63,10 @@ export default {
       return spellings.join(', ')
     },
     async getWordInfo() { 
+      this.loading = true
       let result = await axios.get('https://oare-test.herokuapp.com/api/dictionaryWords/'
         + this.wordId)
+      this.loading = false
       let data = result.data
       this.word = data.word
       this.definitions = []
@@ -87,7 +96,3 @@ export default {
   },
 }
 </script>
-
-<style>
-
-</style>

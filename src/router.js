@@ -22,7 +22,7 @@ export default new Router({
       props: true
     },
     {
-      path: '/epigraphies/:textId',
+      path: '/epigraphies/:textName/:textId',
       name: 'epigraphies',
       component: EpigraphyView,
       props: true
