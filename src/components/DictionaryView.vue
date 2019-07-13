@@ -1,34 +1,37 @@
 <template>
-  <div>
+  <div class="p-12">
     <v-progress-linear
       indeterminate
       v-if="loading"
     />
     <div v-else>
-      <h1 class="display-1 font-weight-bold">{{ word }}</h1>
-      <h3 class="mt-3 headline">Definitions</h3>
-      <ul>
-        <li
-          v-for="(definition, index) in definitions"
-          :key="index"
-          class="title font-weight-medium"
-        >
-          {{ definition.definition }} 
-        </li>
-      </ul>
-
-
-      <h3 class="mt-2 headline">Forms</h3>
-      <ul>
-        <li
-          v-for="(form, index) in forms"
-          :key="index"
-          class="title font-weight-regular mb-2"
-        >
-          <span class="font-weight-medium">{{ form.form }}: </span>
-           {{ spellingsList(form.spellings) }}
-        </li>
-      </ul>
+      <h1 class="display-1 mb-1 font-weight-bold pl-1">{{ word }}</h1>
+      <div class="block h-1 bg-gray-200" />
+      <div class="flex justify-start items-baseline mt-5 pl-2">
+        <h3 class="headline mr-20 w-32">Definitions</h3>
+        <ul>
+          <li
+            v-for="(definition, index) in definitions"
+            :key="index"
+            class="title font-weight-light italic"
+          >
+            {{ definition.definition }} 
+          </li>
+        </ul>
+      </div>
+      <div class="flex flex-row justify-start items-baseline mt-4 pl-2">
+        <h3 class="headline mr-20 w-32">Forms</h3>
+        <ul >
+          <li
+            v-for="(form, index) in forms"
+            :key="index"
+            class="title font-weight-regular mt-2"
+          >
+            <span class="font-weight-medium">{{ form.form }}: </span>
+            {{ spellingsList(form.spellings) }}
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
