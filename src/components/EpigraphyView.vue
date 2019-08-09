@@ -20,7 +20,7 @@
             class="title font-weight-regular mb-2"
             :key="lineNum" 
           >
-            {{ lineNum }}. {{ lineText(line) }}
+            <sup>{{ lineNum }}.</sup> {{ lineText(line) }}
           </li>
         </ul>
       </div>
