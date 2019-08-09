@@ -1,117 +1,117 @@
 <template>
-    <v-app>
-      <OareSidebar :openFlag="openFlag">
-        <v-text-field 
-          v-model="searchText"
-          background-color="white"
-          box 
-          class="mt-5 mx-3"
-          clearable
-          label="Search" 
-          light
+  <v-app>
+    <v-navigation-drawer
+      app
+      dark
+      clipped
+      v-model="drawer"
+      :mobile-break-point="$vuetify.breakpoint.thresholds.sm"
+    >
+      <v-text-field
+        v-model="searchText"
+        background-color="white"
+        filled
+        class="mx-3 mt-2"
+        clearable
+        label="Search"
+        light
+      />
+      <div v-if="sidebarLoading" class="text-xs-center">
+        <v-progress-circular indeterminate color="white" />
+      </div>
+      <div v-else>
+        <v-treeview
+          :active.sync="active"
+          activatable
+          active-class="primary--text"
+          class="white--text"
+          :items="data"
+          item-key="id"
+          hoverable
+          open-on-click
+          return-object
+          transition
+          :search="searchText"
         />
-        <div v-if="sidebarLoading" class="text-xs-center">
-          <v-progress-circular 
-            indeterminate
-            color="white"
-          />
-        </div>
-        <div v-else>
-          <v-treeview 
-            :active.sync="active"
-            activatable
-            active-class="primary--text"
-            class="white--text"
-            :items="data"
-            item-key="id"             
-            hoverable
-            open-on-click
-            return-object
-            transition
-            :search="searchText"
-          />
-        </div>
-      </OareSidebar>
-      <v-toolbar fixed clipped-left dark>
-        <v-toolbar-side-icon 
-          v-if="$vuetify.breakpoint.mdAndDown"
-          @click="openFlag++"
-        />
-        <v-toolbar-title>{{ toolbarTitle }}</v-toolbar-title>
-      </v-toolbar>
-      <v-content app class="blue-grey lighten-4 pt-4 mt-5">
-        <v-container class="px-3 py-3" fluid>
-          <ContentView>
-            <router-view/>
-          </ContentView>
-        </v-container>
-      </v-content>
-    </v-app>
+      </div>
+    </v-navigation-drawer>
+    <v-app-bar app dark clipped-left>
+      <v-app-bar-nav-icon @click="drawer = !drawer" />
+      <v-toolbar-title>{{ toolbarTitle }}</v-toolbar-title>
+    </v-app-bar>
+
+    <v-content class="blue-grey lighten-4">
+      <v-container fluid>
+        <ContentView>
+          <router-view />
+        </ContentView>
+      </v-container>
+    </v-content>
+  </v-app>
 </template>
 
 <script>
-import OareSidebar from './components/OareSidebar'
-import ContentView from './components/ContentView'
-import axios from 'axios'
+import ContentView from "./components/ContentView";
+import axios from "axios";
 
 export default {
-  name: 'app',
+  name: "app",
   components: {
-    OareSidebar,
     ContentView
   },
   data() {
     return {
       active: [],
       data: [],
-      openFlag: 0,
-      searchText: '',
+      drawer: true,
+      searchText: "",
       sidebarLoading: false
-    }
+    };
   },
   computed: {
-    selected () {
+    selected() {
       if (this.active.length > 0) {
-        return this.active[0]
+        return this.active[0];
       }
-      return undefined
+      return undefined;
     },
-    toolbarTitle () {
-      if(this.$vuetify.breakpoint.xs) {
-        return 'OARE'
+    toolbarTitle() {
+      if (this.$vuetify.breakpoint.xs) {
+        return "OARE";
       }
-      return 'Old Assyrian Research Environment Database'
+      return "Old Assyrian Research Environment Database";
     }
   },
   watch: {
     selected() {
-      if(!this.selected) return
-      
-      let type = this.selected.type
-      if(type === 'dictionaryWord') {
-        this.$router.push({name: 'dictionary', params: {wordId: this.selected.id}})
-      } else if (type === 'textText') {
-        this.$router.push({name: 'epigraphies', 
-          params: {textId: this.selected.textId, textName: this.selected.name}})
+      if (!this.selected) return;
+
+      let type = this.selected.type;
+      if (type === "dictionaryWord") {
+        this.$router.push({
+          name: "dictionary",
+          params: { wordId: this.selected.id }
+        });
+      } else if (type === "textText") {
+        this.$router.push({
+          name: "epigraphies",
+          params: { textId: this.selected.textId, textName: this.selected.name }
+        });
       }
     }
   },
   async created() {
-		try {
-      this.sidebarLoading = true
-      let data = await axios.get('https://oare-test.herokuapp.com/api/hierarchyCategories')
-      this.data = data.data
-      this.sidebarLoading = false
-		} catch (error) {
-			console.log("didn't work")
-			console.log(error)
-		}
-	}
-}
-</script>
-
-<style>
-  html, body {
-    height: 100%;
+    try {
+      this.sidebarLoading = true;
+      let data = await axios.get(
+        "https://oare-test.herokuapp.com/api/hierarchyCategories"
+      );
+      this.data = data.data;
+      this.sidebarLoading = false;
+    } catch (error) {
+      console.log("didn't work");
+      console.log(error);
+    }
   }
-</style>
+};
+</script>
