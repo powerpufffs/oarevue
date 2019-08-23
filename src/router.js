@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Home from './views/Home'
 import DictionaryView from './components/DictionaryView'
 import EpigraphyView from './components/EpigraphyView'
+import SignInView from './components/SignInView'
 
 Vue.use(Router)
 
@@ -12,6 +13,11 @@ export default new Router({
   routes: [
     {
       path: '/',
+      name: 'signin',
+      component: SignInView
+    },
+    {
+      path: '/home',
       name: 'home',
       component: Home
     },
@@ -26,6 +32,11 @@ export default new Router({
       name: 'epigraphies',
       component: EpigraphyView,
       props: true
+    },
+    {
+      path: '/signin',
+      name: 'signin',
+      component: SignInView
     }
   ]
 })
