@@ -53,6 +53,7 @@
 <script>
 import ContentView from "./components/ContentView";
 import axios from "axios";
+import Constants from './constants'
 
 export default {
   name: "app",
@@ -104,9 +105,11 @@ export default {
     try {
       this.sidebarLoading = true;
       let data = await axios.get(
-        "https://oare-test.herokuapp.com/api/hierarchyCategories"
+        `${Constants.API_PATH}/hierarchyCategories`
       );
-      this.data = data.data;
+      console.log('got categories')
+      console.log(data.data)
+      // this.data = data.data;
       this.sidebarLoading = false;
     } catch (error) {
       console.log("didn't work");
