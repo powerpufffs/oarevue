@@ -134,6 +134,10 @@ export default {
           name: child.name,
           type: child.type
         };
+        // Check if the sidebar item is a text
+        if (child.textId !== null && child.textId !== undefined) {
+          newCategory.textId = child.textId;
+        }
         childrenArray.push(newCategory);
 
         let childChildren = [];
