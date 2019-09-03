@@ -53,6 +53,7 @@
 <script>
 import ContentView from "./components/ContentView";
 import axios from "axios";
+import Constants from "./constants";
 
 export default {
   name: "app",
@@ -103,14 +104,44 @@ export default {
   async created() {
     try {
       this.sidebarLoading = true;
-      let data = await axios.get(
-        "https://oare-test.herokuapp.com/api/hierarchyCategories"
+      let { data } = await axios.get(
+        `${Constants.API_PATH}/hierarchyCategories`
       );
-      this.data = data.data;
+      this.formatCategories(data);
       this.sidebarLoading = false;
     } catch (error) {
+      // TODO log error to Sentry
       console.log("didn't work");
       console.log(error);
+    }
+  },
+
+  methods: {
+    // Categories are returned as a flat list,
+    // make it recursive so that it can be
+    // used by v-treeview
+    formatCategories(categories) {
+      // Get root categories
+      this.formatCategoriesHelper(categories, this.data, null);
+    },
+
+    // Recursively build the children for a list of categories
+    formatCategoriesHelper(categories, childrenArray, parentId) {
+      let children = categories.filter(c => c.parent === parentId);
+      children.forEach(child => {
+        let newCategory = {
+          id: child.id,
+          name: child.name,
+          type: child.type
+        };
+        childrenArray.push(newCategory);
+
+        let childChildren = [];
+        this.formatCategoriesHelper(categories, childChildren, newCategory.id);
+        if (childChildren.length > 0) {
+          newCategory.children = childChildren;
+        }
+      });
     }
   }
 };
