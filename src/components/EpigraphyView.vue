@@ -4,17 +4,12 @@
 
     <div v-else>
       <h1 class="display-1 font-weight-bold">{{ textName }}</h1>
-
-      <div v-for="(lines, side) in data" :key="side">
+      <div v-for="side in sortedSides" :key="side">
         <h3 class="mt-3 headline">{{ side }}</h3>
         <ul>
-          <li
-            v-for="(line, lineNum) in lines"
-            class="title font-weight-regular mb-2"
-            :key="lineNum"
-          >
+          <li v-for="lineNum in sortedLineNums(side)" :key="lineNum">
             <sup>{{ lineNum }}.</sup>
-            {{ lineText(line) }}
+            {{ lineText(tabletText[side][lineNum]) }}
           </li>
         </ul>
       </div>
@@ -40,22 +35,27 @@ export default {
   },
   data() {
     return {
-      data: {},
-      loading: false
+      loading: false,
+      tabletText: {},
+      sortedSides: []
     };
-  },
-  created() {
-    console.log(this.textId);
-    this.getEpigraphyInfo();
   },
 
   watch: {
-    textId() {
-      this.getEpigraphyInfo();
+    textId: {
+      handler() {
+        this.tabletText = {};
+        this.sortedSides = [];
+        this.getEpigraphyInfo();
+      },
+      immediate: true
     }
   },
 
   methods: {
+    /**
+     * Query the server for the tablet text
+     */
     async getEpigraphyInfo() {
       this.loading = true;
       let { data } = await axios.get(
@@ -63,26 +63,29 @@ export default {
       );
       this.loading = false;
       this.formatEpigraphies(data);
-      // this.data = result.data;
     },
 
+    /**
+     * Epigraphies comes as a flat list from the server,
+     * so format them so they can be properly displayed.
+     *
+     * @arg {array} epigraphies - The list of epigraphies returned
+     * from the server
+     */
     formatEpigraphies(epigraphies) {
-      /**
-       * for each side:
-       *  for each line in side:
-       *    for each character in line:
-       *        for each character in word:
-       *          if the char is 0, append a "|"
-       *          if it's incrementing, part of same word.
-       *          else, it's a new word
-       */
-      let sides = [];
+      // Sort by line number and get a list of the sides.
+      // Necessary because we want to show the lines in order,
+      // and object keys are not sorted.
+      epigraphies.sort((val1, val2) => val1.line - val2.line);
       epigraphies.forEach(val => {
-        if (!sides.includes(val.side)) {
-          sides.push(val.side);
+        if (!this.sortedSides.includes(val.side)) {
+          this.sortedSides.push(val.side);
         }
       });
-      sides.forEach(side => {
+
+      // Get the reading of each line on each side
+      this.sortedSides.forEach(side => {
+        // Get a sorted list of the line numbers on the tablet
         let lines = epigraphies.filter(val => {
           return val.side === side;
         });
@@ -92,21 +95,75 @@ export default {
             lineNums.push(val.line);
           }
         });
-        lineNums.sort();
+        lineNums.sort((val1, val2) => val1 - val2);
+
+        // Maps a line number to an array with the reading
+        let lineTexts = {};
+
+        // Get the reading for each line
         lineNums.forEach(lineNum => {
-          let chars = lines.filter(val => {
-            return val.line === lineNum;
+          lineTexts[lineNum] = [];
+
+          // Get all rows with this line
+          let charsOnLineRows = lines
+            .filter(val => {
+              return val.line === lineNum;
+            })
+            .sort((val1, val2) => {
+              return val1.char_on_line - val2.char_on_line;
+            });
+
+          let prevCharIndex = -1; // Keeps track of character in word index
+          let curWord = []; // Keeps track of word as its being built
+          charsOnLineRows.forEach(row => {
+            let charIndex = row.char_in_word;
+            if (charIndex === 0) {
+              // Divider
+              lineTexts[lineNum].push(curWord);
+              lineTexts[lineNum].push([row.reading]);
+              curWord = [];
+            } else if (charIndex > prevCharIndex) {
+              // Part of same word
+              curWord.push(row.reading);
+            } else {
+              // Start of new word
+              lineTexts[lineNum].push(curWord);
+              curWord = [row.reading];
+            }
+            prevCharIndex = charIndex;
           });
+          if (curWord.length > 0) {
+            lineTexts[lineNum].push(curWord);
+          }
+          this.tabletText[side] = lineTexts;
         });
       });
     },
 
+    /**
+     * Text representation of the reading of a line
+     *
+     * @arg {number} line The line number to get the text of.
+     */
     lineText(line) {
       let words = [];
       line.forEach(chars => {
         words.push(chars.join("-"));
       });
       return words.join(" ");
+    },
+
+    /**
+     * Since object keys aren't sorted, get the
+     * line numbers for a side in sorted order
+     *
+     * @arg {string} side The side of the tablet
+     * whose line numbers should be returned
+     */
+    sortedLineNums(side) {
+      return Object.keys(this.tabletText[side]).sort(
+        (val1, val2) => Number(val1) - Number(val2)
+      );
     }
   }
 };
