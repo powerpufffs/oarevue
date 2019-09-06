@@ -1,6 +1,6 @@
 <template>
   <v-layout justify-space-between>
-    <v-flex xs12 sm6 offset-sm4>
+    <v-flex xs10 sm6 offset-sm3>
       <v-col align-self="align">
         <v-card class="w-full mt-12 p-3 mx-auto" :style="classes" :width="450" :elevation="24">
           <v-card-title primary-title>
@@ -9,10 +9,10 @@
             </div>
           </v-card-title>
           <v-card-text>
-            <v-col cols="12" sm="6" md="3">
+            <v-col cols="12">
               <v-text-field label="Email" outlined></v-text-field>
             </v-col>
-            <v-col cols="12" sm="6" md="3">
+            <v-col cols="12">
               <v-text-field outlined v-model="password" label="Password" name="password"></v-text-field>
             </v-col>
           </v-card-text>

@@ -58,7 +58,6 @@ import SignInView from "./SignInView";
 import OareSidebar from "./OareSidebar";
 import ContentView from "./ContentView";
 import axios from "axios";
-
 export default {
   name: "nvabar",
   components: {
@@ -91,7 +90,6 @@ export default {
   watch: {
     selected() {
       if (!this.selected) return;
-
       let type = this.selected.type;
       if (type === "dictionaryWord") {
         this.$router.push({
@@ -127,4 +125,3 @@ export default {
   color: white;
 }
 </style>
-
