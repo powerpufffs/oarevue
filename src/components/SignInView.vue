@@ -47,23 +47,3 @@ export default {
   methods: {}
 };
 </script>
-
-<style lang="css" scoped>
-/* .carddown {
-  padding-top: 60px;
-}
-.up {
-  padding-top: 3px;
-}
-.space {
-  padding-top: 60px;
-  padding-bottom: 60px;
-}
-.log-in h2 {
-  font-size: 2em;
-  margin: 20px auto;
-}
-.down {
-  padding-bottom: 30px;
-} */
-</style>
