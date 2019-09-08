@@ -1,20 +1,17 @@
 <template>
-  <div>
+  <OareContentView :title="textName">
     <v-progress-circular v-if="loading" indeterminate />
 
     <div v-else>
-      <h1 class="display-1 font-weight-bold">{{ textName }}</h1>
-      <div v-for="side in sortedSides" :key="side">
-        <h3 class="mt-3 headline">{{ side }}</h3>
-        <ul>
-          <li v-for="lineNum in sortedLineNums(side)" :key="lineNum">
-            <sup>{{ lineNum }}.</sup>
-            {{ lineText(tabletText[side][lineNum]) }}
-          </li>
-        </ul>
+      <div v-for="(side, index) in sortedSides" :key="side">
+        <OareSubheader :class="{'mt-4': index === 0 ? false : true }">{{ side }}</OareSubheader>
+        <OareListItem v-for="lineNum in sortedLineNums(side)" :key="lineNum">
+          <sup>{{ lineNum }}.</sup>
+          {{ lineText(tabletText[side][lineNum]) }}
+        </OareListItem>
       </div>
     </div>
-  </div>
+  </OareContentView>
 </template>
 
 <script>

@@ -42,24 +42,18 @@
 
     <v-content class="blue-grey lighten-4">
       <v-container fluid>
-        <ContentView>
-          <router-view />
-        </ContentView>
+        <router-view />
       </v-container>
     </v-content>
   </v-app>
 </template>
 
 <script>
-import ContentView from "./components/ContentView";
 import axios from "axios";
 import Constants from "./constants";
 
 export default {
   name: "app",
-  components: {
-    ContentView
-  },
   data() {
     return {
       active: [],

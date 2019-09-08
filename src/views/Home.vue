@@ -1,14 +1,14 @@
 <template>
-  <div>
+  <OareContentView title="Home">
     <p class="title font-weight-regular">
       Select a dictionary word or text from
       the navigation bar to get started.
     </p>
-  </div>
+  </OareContentView>
 </template>
 
 <script>
 export default {
-  name: 'home'
-}
+  name: "home"
+};
 </script>
