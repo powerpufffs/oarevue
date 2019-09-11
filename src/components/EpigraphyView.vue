@@ -114,18 +114,22 @@ export default {
           let curWord = []; // Keeps track of word as its being built
           charsOnLineRows.forEach(row => {
             let charIndex = row.char_in_word;
+            let reading = {
+              type: row.type,
+              reading: row.reading
+            };
             if (charIndex === 0) {
               // Divider
               lineTexts[lineNum].push(curWord);
-              lineTexts[lineNum].push([row.reading]);
+              lineTexts[lineNum].push([reading]);
               curWord = [];
             } else if (charIndex > prevCharIndex) {
               // Part of same word
-              curWord.push(row.reading);
+              curWord.push(reading);
             } else {
               // Start of new word
               lineTexts[lineNum].push(curWord);
-              curWord = [row.reading];
+              curWord = [reading];
             }
             prevCharIndex = charIndex;
           });
@@ -144,8 +148,22 @@ export default {
      */
     lineText(line) {
       let words = [];
-      line.forEach(chars => {
-        words.push(chars.join("-"));
+      line.forEach(word => {
+        let wordReading = "";
+        let lastIndex = word.length - 1;
+        word.forEach((char, index) => {
+          if (index !== lastIndex) {
+            // Join logograms with periods
+            if (char.type === 2) {
+              wordReading += `${char.reading}.`;
+            } else {
+              wordReading += `${char.reading}-`;
+            }
+          } else {
+            wordReading += char.reading;
+          }
+        });
+        words.push(wordReading);
       });
       return words.join(" ");
     },
