@@ -118,7 +118,7 @@ export default {
               type: row.type,
               reading: row.reading
             };
-            if (charIndex === 0) {
+            if (charIndex === null) {
               // Divider
               lineTexts[lineNum].push(curWord);
               lineTexts[lineNum].push([reading]);
