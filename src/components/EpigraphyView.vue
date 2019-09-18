@@ -2,15 +2,23 @@
   <OareContentView :title="textName">
     <v-progress-circular v-if="loading" indeterminate />
 
-    <div v-else>
-      <div v-for="(side, index) in sortedSides" :key="side">
-        <OareSubheader :class="{'mt-4': index === 0 ? false : true }">{{ side }}</OareSubheader>
-        <OareListItem v-for="lineNum in sortedLineNums(side)" :key="lineNum">
-          <sup>{{ lineNum }}.</sup>
-          {{ lineText(tabletText[side][lineNum]) }}
-        </OareListItem>
-      </div>
-    </div>
+    <v-container v-else>
+      <v-row>
+        <v-col cols="6">
+          <OareSubheader>Epigraphies</OareSubheader>
+          <div v-for="(side, index) in sortedSides" :key="side">
+            <OareSubheader :class="{'mt-4': index === 0 ? false : true }">{{ side }}</OareSubheader>
+            <OareListItem v-for="lineNum in sortedLineNums(side)" :key="lineNum">
+              <sup>{{ lineNum }}.</sup>
+              {{ lineText(tabletText[side][lineNum]) }}
+            </OareListItem>
+          </div>
+        </v-col>
+        <v-col cols="6">
+          <OareSubheader>Discourse Units</OareSubheader>
+        </v-col>
+      </v-row>
+    </v-container>
   </OareContentView>
 </template>
 
@@ -44,6 +52,7 @@ export default {
         this.tabletText = {};
         this.sortedSides = [];
         this.getEpigraphyInfo();
+        this.getDiscourseInfo();
       },
       immediate: true
     }
@@ -60,6 +69,13 @@ export default {
       );
       this.loading = false;
       this.formatEpigraphies(data);
+    },
+
+    async getDiscourseInfo() {
+      let { data } = await axios.get(
+        `${Constants.API_PATH}/discourseUnits/${this.textId}`
+      );
+      console.log(data);
     },
 
     /**
@@ -93,10 +109,8 @@ export default {
           }
         });
         lineNums.sort((val1, val2) => val1 - val2);
-
         // Maps a line number to an array with the reading
         let lineTexts = {};
-
         // Get the reading for each line
         lineNums.forEach(lineNum => {
           lineTexts[lineNum] = [];
@@ -185,4 +199,7 @@ export default {
 </script>
 
 <style>
+.inline-block {
+  display: inline-block;
+}
 </style>
