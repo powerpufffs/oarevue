@@ -16,6 +16,7 @@
         </v-col>
         <v-col cols="6">
           <OareSubheader>Discourse Units</OareSubheader>
+          <v-treeview :items="discourses" />
         </v-col>
       </v-row>
     </v-container>
