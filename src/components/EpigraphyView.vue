@@ -42,6 +42,7 @@ export default {
     return {
       loading: false,
       tabletText: {},
+      discourses: [],
       sortedSides: []
     };
   },
@@ -52,7 +53,6 @@ export default {
         this.tabletText = {};
         this.sortedSides = [];
         this.getEpigraphyInfo();
-        this.getDiscourseInfo();
       },
       immediate: true
     }
@@ -64,18 +64,70 @@ export default {
      */
     async getEpigraphyInfo() {
       this.loading = true;
-      let { data } = await axios.get(
+      let epigraphies = (await axios.get(
         `${Constants.API_PATH}/textEpigraphies/${this.textId}`
-      );
+      )).data;
+      let discourses = (await axios.get(
+        `${Constants.API_PATH}/discourseUnits/${this.textId}`
+      )).data;
       this.loading = false;
-      this.formatEpigraphies(data);
+      this.formatEpigraphies(epigraphies, discourses);
     },
 
-    async getDiscourseInfo() {
-      let { data } = await axios.get(
-        `${Constants.API_PATH}/discourseUnits/${this.textId}`
+    getDiscourseByIdHelper(discourses, id) {
+      for (let i = 0; i < discourses.length; i++) {
+        let discourse = discourses[i];
+        if (discourse.id === id) {
+          return discourse;
+        }
+        if (discourse.hasOwnProperty("children")) {
+          let child = this.getDiscourseByIdHelper(discourse.children, id);
+          if (child !== null) {
+            return child;
+          }
+        }
+      }
+      return null;
+    },
+
+    /**
+     * Check if discourses has an id
+     */
+    getDiscourseById(id) {
+      return this.getDiscourseByIdHelper(this.discourses, id);
+    },
+
+    addDiscourseChildren(rawDiscourses, id, childrenArray) {
+      let discourse = rawDiscourses.find(
+        discourse => discourse.discourse_unit_id === id
       );
-      console.log(data);
+      let elem = {
+        id: discourse.discourse_unit_id,
+        name: discourse.transcription
+      };
+      if (childrenArray.length > 0) {
+        elem.children = childrenArray;
+      }
+      if (discourse.parent_id === null) {
+        this.discourses.push(elem);
+      } else {
+        let parentId = rawDiscourses.find(
+          d => d.unique_id === discourse.parent_id
+        ).discourse_unit_id;
+        let parent = this.getDiscourseById(parentId);
+        if (parent !== null) {
+          if (!parent.hasOwnProperty("children")) {
+            parent.children = [];
+          }
+          parent.children.push(elem);
+        } else {
+          this.addDiscourseChildren(rawDiscourses, parentId, [elem]);
+        }
+      }
+    },
+
+    addDiscourse(rawDiscourses, discourseId) {
+      this.addDiscourseChildren(rawDiscourses, discourseId, []);
     },
 
     /**
@@ -85,7 +137,7 @@ export default {
      * @arg {array} epigraphies - The list of epigraphies returned
      * from the server
      */
-    formatEpigraphies(epigraphies) {
+    formatEpigraphies(epigraphies, discourses) {
       // Sort by line number and get a list of the sides.
       // Necessary because we want to show the lines in order,
       // and object keys are not sorted.
@@ -127,6 +179,9 @@ export default {
           let prevCharIndex = -1; // Keeps track of character in word index
           let curWord = []; // Keeps track of word as its being built
           charsOnLineRows.forEach(row => {
+            if (this.getDiscourseById(row.discourse_unit_id) === null) {
+              this.addDiscourse(discourses, row.discourse_unit_id);
+            }
             let charIndex = row.char_in_word;
             let reading = {
               type: row.type,
