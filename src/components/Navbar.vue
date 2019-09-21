@@ -29,7 +29,7 @@
         />
       </div>
     </OareSidebar>
-    <v-toolbar fixed clipped-left dark>
+    <v-toolbar clipped-left dark>
       <v-toolbar-side-icon v-if="$vuetify.breakpoint.mdAndDown" @click="openFlag++" />
       <v-toolbar-title>{{ toolbarTitle }}</v-toolbar-title>
       <v-spacer></v-spacer>

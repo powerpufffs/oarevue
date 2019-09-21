@@ -4,6 +4,8 @@ import Home from './views/Home'
 import DictionaryView from './components/DictionaryView'
 import EpigraphyView from './components/EpigraphyView'
 import SignInView from './components/SignInView'
+import RegisterView from './components/RegisterView'
+import EditUserView from './components/EditUserView'
 
 Vue.use(Router)
 
@@ -37,6 +39,16 @@ export default new Router({
       path: '/signin',
       name: 'signin',
       component: SignInView
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: RegisterView
+    },
+    {
+      path: '/edituser',
+      name: 'edituser',
+      component: EditUserView
     }
   ]
 })
