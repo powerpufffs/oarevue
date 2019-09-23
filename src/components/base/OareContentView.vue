@@ -1,5 +1,5 @@
 <template>
-  <v-card class="mx-auto pa-7" max-width="100%" :class="computedClasses">
+  <v-card class="mx-auto pa-md-7 pa-xs-0" max-width="100%" :class="computedClasses">
     <v-card-title class="display-2 font-weight-bold mb-6">{{ title }}</v-card-title>
     <v-card-text class="black--text">
       <slot></slot>

@@ -4,19 +4,21 @@
 
     <v-container v-else>
       <v-row>
-        <v-col cols="6">
+        <v-col cols="12" md="6">
           <OareSubheader>Epigraphies</OareSubheader>
           <div v-for="(side, index) in sortedSides" :key="side">
-            <OareSubheader :class="{'mt-4': index === 0 ? false : true }">{{ side }}</OareSubheader>
+            <OareSubheader :class="{'mt-4': index === 0 ? false : true }">{{ sideText(side) }}</OareSubheader>
             <OareListItem v-for="lineNum in sortedLineNums(side)" :key="lineNum">
               <sup>{{ lineNum }}.</sup>
               {{ lineText(tabletText[side][lineNum]) }}
             </OareListItem>
           </div>
         </v-col>
-        <v-col cols="6">
+        <v-col cols="12" md="6">
           <OareSubheader>Discourse Units</OareSubheader>
-          <v-treeview :items="discourses" />
+          <v-treeview class="title font-weight-regular" :items="discourses">
+            <template v-slot:label="{ item }">{{ item.name }}</template>
+          </v-treeview>
         </v-col>
       </v-row>
     </v-container>
@@ -26,6 +28,7 @@
 <script>
 import axios from "axios";
 import Constants from "../constants";
+
 export default {
   name: "EpigraphyView",
   props: {
@@ -60,6 +63,24 @@ export default {
   },
 
   methods: {
+    sideText(sideNum) {
+      switch (Number(sideNum)) {
+        case 1:
+          return "obv.";
+        case 2:
+          return "lo.e.";
+        case 3:
+          return "rev.";
+        case 4:
+          return "u.e.";
+        case 5:
+          return "le.e.";
+        case 6:
+          return "r.e.";
+        default:
+          return sideNum;
+      }
+    },
     /**
      * Query the server for the tablet text
      */
