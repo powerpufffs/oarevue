@@ -23,6 +23,7 @@
 <script>
 import axios from "axios";
 import Constants from "../constants";
+
 export default {
   name: "DictionaryView",
   props: {
@@ -74,13 +75,12 @@ export default {
     }
   },
 
-  created() {
-    this.getWordInfo();
-  },
-
   watch: {
-    wordId() {
-      this.getWordInfo();
+    wordId: {
+      handler() {
+        this.getWordInfo();
+      },
+      immediate: true
     }
   }
 };

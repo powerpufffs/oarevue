@@ -56,6 +56,7 @@ export default {
       handler() {
         this.tabletText = {};
         this.sortedSides = [];
+        this.discourses = [];
         this.getEpigraphyInfo();
       },
       immediate: true
@@ -201,7 +202,10 @@ export default {
           let prevCharIndex = -1; // Keeps track of character in word index
           let curWord = []; // Keeps track of word as its being built
           charsOnLineRows.forEach(row => {
-            if (this.getDiscourseById(row.discourse_unit_id) === null) {
+            if (
+              row.discourse_unit_id !== null &&
+              this.getDiscourseById(row.discourse_unit_id) === null
+            ) {
               this.addDiscourse(discourses, row.discourse_unit_id);
             }
             let charIndex = row.char_in_word;
