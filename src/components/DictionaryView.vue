@@ -3,7 +3,7 @@
     <v-progress-linear indeterminate v-if="loading" />
     <div v-else>
       <div class="flex justify-start items-baseline mt-5 pl-2">
-        <OareSubheader>Definitions</OareSubheader>
+        <OareSubheader>{{ definitionSubheader }}</OareSubheader>
         <OareListItem
           v-for="(definition, index) in definitions"
           :key="index"
@@ -72,6 +72,24 @@ export default {
           ...form
         });
       });
+    }
+  },
+
+  computed: {
+    /**
+     * Words in the onomasticon should show a subheader of
+     * "Translation" for the dictionary definitions.
+     * Check the `onom` GET param for if it's
+     * in the onomasticon or not.
+     */
+    definitionSubheader() {
+      if (
+        this.$route.query.hasOwnProperty("onom") &&
+        this.$route.query.onom === true
+      ) {
+        return "Translation";
+      }
+      return "Definitions";
     }
   },
 

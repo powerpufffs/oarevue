@@ -80,12 +80,19 @@ export default {
   watch: {
     selected() {
       if (!this.selected) return;
-
       let type = this.selected.type;
       if (type === "dictionaryWord") {
+        let onom = false;
+        if (
+          this.selected.hasOwnProperty("onomasticon") &&
+          this.selected.onomasticon === true
+        ) {
+          onom = true;
+        }
         this.$router.push({
           name: "dictionary",
-          params: { wordId: this.selected.id }
+          params: { wordId: this.selected.id },
+          query: { onom }
         });
       } else if (type === "textText") {
         this.$router.push({
@@ -103,6 +110,7 @@ export default {
       );
       this.formatCategories(data);
       this.sidebarLoading = false;
+      this.setOnomasticonWords();
     } catch (error) {
       // TODO log error to Sentry
       console.log("didn't work");
@@ -117,6 +125,52 @@ export default {
     formatCategories(categories) {
       // Get root categories
       this.formatCategoriesHelper(categories, this.data, null);
+    },
+
+    /**
+     * Recursive helper function for findCategoryByName
+     */
+    findCategoryByNameHelper(name, categories) {
+      for (let i = 0; i < categories.length; i++) {
+        let category = categories[i];
+        if (category.name === name) {
+          return category;
+        }
+
+        if (category.hasOwnProperty("children")) {
+          let childRes = this.findCategoryByNameHelper(name, category.children);
+          if (childRes !== null) {
+            return childRes;
+          }
+        }
+      }
+      return null;
+    },
+
+    /**
+     * Get a reference to a category by its name.
+     * Returns the first category or a child category
+     * with that name.
+     * @param {string} name the name of the category to find
+     */
+    findCategoryByName(name) {
+      return this.findCategoryByNameHelper(name, this.data);
+    },
+
+    /** Since onomasticon words have to be displayed
+     * with "translation" instead of "definition",
+     * recursively apply an "onomasticon" attribute
+     * to words in the onomasticon
+     */
+    setOnomasticonWords() {
+      let onom = this.findCategoryByName("Onomasticon");
+      onom.children.forEach(letterChild => {
+        if (letterChild.hasOwnProperty("children")) {
+          letterChild.children.forEach(wordChild => {
+            wordChild.onomasticon = true;
+          });
+        }
+      });
     },
 
     // Recursively build the children for a list of categories
