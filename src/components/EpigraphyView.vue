@@ -28,6 +28,7 @@
 <script>
 import axios from "axios";
 import Constants from "../constants";
+const LOGOGRAM = 2;
 
 export default {
   name: "EpigraphyView",
@@ -211,7 +212,8 @@ export default {
             let charIndex = row.char_in_word;
             let reading = {
               type: row.type,
-              reading: row.reading
+              reading: row.reading,
+              numberVal: row.number_val
             };
             if (charIndex === null) {
               // Divider
@@ -243,21 +245,27 @@ export default {
      */
     lineText(line) {
       let words = [];
+
       line.forEach(word => {
         let wordReading = "";
-        let lastIndex = word.length - 1;
-        word.forEach((char, index) => {
-          if (index !== lastIndex) {
-            // Join logograms with periods
-            if (char.type === 2) {
-              wordReading += `${char.reading}.`;
+        // Go until the second to last character so you
+        // can always check the next one
+        for (let i = 0; i < word.length - 1; i++) {
+          let char = word[i];
+          wordReading += char.reading;
+          // Join two logograms with periods
+          if (char.type == LOGOGRAM && word[i + 1].type == LOGOGRAM) {
+            if (char.numberVal && word[i + 1].numberVal) {
+              wordReading += "+";
             } else {
-              wordReading += `${char.reading}-`;
+              wordReading += ".";
             }
           } else {
-            wordReading += char.reading;
+            wordReading += "-";
           }
-        });
+        }
+        // Add the last character
+        wordReading += word[word.length - 1].reading;
         words.push(wordReading);
       });
       return words.join(" ");
