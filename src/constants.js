@@ -1,3 +1,3 @@
 export default {
-  API_PATH: '/api'
+  API_PATH: 'http://localhost:5000/api'
 }

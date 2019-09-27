@@ -10,7 +10,7 @@
             <OareSubheader :class="{'mt-4': index === 0 ? false : true }">{{ sideText(side) }}</OareSubheader>
             <OareListItem v-for="lineNum in sortedLineNums(side)" :key="lineNum">
               <sup>{{ lineNum }}.</sup>
-              {{ lineText(tabletText[side][lineNum]) }}
+              <span class="ml-2" v-html="lineText(tabletText[side][lineNum])" />
             </OareListItem>
           </div>
         </v-col>
@@ -29,6 +29,7 @@
 import axios from "axios";
 import Constants from "../constants";
 const LOGOGRAM = 2;
+const PHONOGRAM = 1;
 
 export default {
   name: "EpigraphyView",
@@ -239,6 +240,20 @@ export default {
     },
 
     /**
+     * Format the reading of a character in a word.
+     * If it's a logogram, italicize it
+     * 
+     * @arg {object} char A row from the epigraphy endpoint.
+     */
+    formattedReading(char) {
+      if(char.type === LOGOGRAM || char.reading === '|') {
+        return char.reading
+      } else {
+        return `<em>${char.reading}</em>`
+      }
+    },
+
+    /**
      * Text representation of the reading of a line
      *
      * @arg {number} line The line number to get the text of.
@@ -252,7 +267,8 @@ export default {
         // can always check the next one
         for (let i = 0; i < word.length - 1; i++) {
           let char = word[i];
-          wordReading += char.reading;
+
+          wordReading += this.formattedReading(char)
           // Join two logograms with periods
           if (char.type == LOGOGRAM && word[i + 1].type == LOGOGRAM) {
             if (char.numberVal && word[i + 1].numberVal) {
@@ -265,7 +281,7 @@ export default {
           }
         }
         // Add the last character
-        wordReading += word[word.length - 1].reading;
+        wordReading += this.formattedReading(word[word.length - 1]);
         words.push(wordReading);
       });
       return words.join(" ");
