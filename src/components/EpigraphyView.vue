@@ -29,7 +29,7 @@
 import axios from "axios";
 import Constants from "../constants";
 const LOGOGRAM = 2;
-const PHONOGRAM = 1;
+const SPECIAL_PHONOGRAM = 0;
 
 export default {
   name: "EpigraphyView",
@@ -246,7 +246,7 @@ export default {
      * @arg {object} char A row from the epigraphy endpoint.
      */
     formattedReading(char) {
-      if(char.type === LOGOGRAM || char.reading === '|') {
+      if(char.type === LOGOGRAM || char.type === SPECIAL_PHONOGRAM || char.reading === '|') {
         return char.reading
       } else {
         return `<em>${char.reading}</em>`
