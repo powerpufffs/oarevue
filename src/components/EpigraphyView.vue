@@ -28,7 +28,6 @@
 <script>
 import axios from "axios";
 import Constants from "../constants";
-import { read } from "fs";
 const LOGOGRAM = 2;
 const SPECIAL_PHONOGRAM = 0;
 const MARKUP_BRACKETS = {
@@ -301,12 +300,7 @@ export default {
     },
 
     insertBracket(reading, bracket, pos) {
-      if (pos === 0) {
-        return bracket + reading
-      } else if (pos === reading.length - 1) {
-        return reading + bracket
-      }
-      return [reading.split(0, pos), bracket, reading.split(pos)].join("");
+      return [reading.slice(0, pos), bracket, reading.slice(pos)].join("");
     },
 
     /**
@@ -319,13 +313,12 @@ export default {
 
       line.forEach(word => {
         let wordReading = "";
-        let bracketFlag = false; // Keeps track of brackets spanning multiple characters in the word
 
         for (let i = 0; i < word.length; i++) {
           let char = word[i];
 
           // Apply markup if it has it
-          if (char.hasOwnProperty("markup") && char.markup !== null) {
+          if (char.markup) {
             let markup = char.markup;
             // If it's a single bracket, just put insert it into the reading
             if (markup.markup in MARKUP_CHARACTERS) {
@@ -339,63 +332,137 @@ export default {
 
             // If it's a bracket, insert the bracket into the appropriate place,
             // may be in a following or previous character
-            else if (markup.markup in MARKUP_BRACKETS) {
+            if (markup.markup in MARKUP_BRACKETS) {
               let bracket1 = MARKUP_BRACKETS[markup.markup][0];
               let bracket2 = MARKUP_BRACKETS[markup.markup][1];
 
               let startPos = markup.start_char;
               let endPos = markup.end_char;
-              if (startPos > 0 && endPos > 0) {
-                char.reading = this.insertBracket(
-                  char.reading,
-                  bracket2,
-                  endPos
-                );
-                char.reading = this.insertBracket(
-                  char.reading,
-                  bracket1,
-                  startPos
-                );
-              } else if (startPos === 0 && endPos > 0) {
-                char.reading = this.insertBracket(
-                  char.reading,
-                  bracket2,
-                  endPos
-                );
+              let addedStartChar = false;
+
+              if (startPos === 0) {
                 if (
                   i === 0 ||
-                  (i > 0 && word[i - 1].markup.markup !== markup.markup)
+                  !word[i - 1].markup ||
+                  word[i - 1].markup.markup !== markup.markup
                 ) {
-                  char.reading = this.insertBracket(char.reading, bracket1, 0);
+                  char.reading = bracket1 + char.reading;
+                  addedStartChar = true;
                 }
-                // TODO Insert end bracket
-              } else if (startPos > 0 && endPos === 0) {
+              } else {
                 char.reading = this.insertBracket(
                   char.reading,
                   bracket1,
                   startPos
                 );
-              } else if (startPos === 0 && endPos === 0) {
-                if (i === 0) {  // Insert bracket at beginning of character because it's 0 and nothing before
-                  char.reading = this.insertBracket(char.reading, bracket1, 0)
-                } else {
-                  // Check if the previous character had the same bracket. If not, add it at the beginning
-                  let prevChar = word[i-1]
-                  if(prevChar.markup && prevChar.markup.markup !== markup.markup) {
-                    char.reading = this.insertBracket(char.reading, bracket1, 0)
-                  }
-
-                  // Add end bracket to end of current character
-                  if(i === word.length - 1) {
-                    char.reading = this.insertBracket(char.reading, bracket2, char.reading.length-1)
-                  } else {
-                    let nextChar = word[i+1]
-                    if(nextChar.markup && nextChar.markup.markup !== markup.markup) {
-                      char.reading = this.insertBracket(char.reading, bracket2, char.reading.length-1)
-                    }
-                  }
-                }
+                addedStartChar = true;
               }
+
+              if (endPos === 0) {
+                if (
+                  i === word.length - 1 ||
+                  !word[i + 1].markup ||
+                  word[i + 1].markup.markup !== markup.markup
+                ) {
+                  char.reading = char.reading + bracket2;
+                }
+              } else {
+                if (addedStartChar) {
+                  endPos++;
+                }
+                char.reading = this.insertBracket(
+                  char.reading,
+                  bracket2,
+                  endPos
+                );
+              }
+              // if (startPos > 0 && endPos > 0) {
+              //   char.reading = this.insertBracket(
+              //     char.reading,
+              //     bracket2,
+              //     endPos,
+              //     END
+              //   );
+              //   char.reading = this.insertBracket(
+              //     char.reading,
+              //     bracket1,
+              //     startPos,
+              //     START
+              //   );
+              // } else if (startPos === 0 && endPos > 0) {
+              //   char.reading = this.insertBracket(
+              //     char.reading,
+              //     bracket2,
+              //     endPos,
+              //     END
+              //   );
+              //   if (
+              //     i === 0 ||
+              //     (i > 0 && word[i - 1].markup.markup !== markup.markup)
+              //   ) {
+              //     char.reading = this.insertBracket(
+              //       char.reading,
+              //       bracket1,
+              //       0,
+              //       START
+              //     );
+              //   }
+              //   // TODO Insert end bracket
+              // } else if (startPos > 0 && endPos === 0) {
+              //   char.reading = this.insertBracket(
+              //     char.reading,
+              //     bracket1,
+              //     startPos,
+              //     START
+              //   );
+              // } else if (startPos === 0 && endPos === 0) {
+              //   if (i === 0) {
+              //     // Insert bracket at beginning of character because it's 0 and nothing before
+              //     char.reading = this.insertBracket(
+              //       char.reading,
+              //       bracket1,
+              //       0,
+              //       START
+              //     );
+              //   } else {
+              //     // Check if the previous character had the same bracket. If not, add it at the beginning
+              //     let prevChar = word[i - 1];
+              //     if (
+              //       prevChar.markup &&
+              //       prevChar.markup.markup !== markup.markup
+              //     ) {
+              //       char.reading = this.insertBracket(
+              //         char.reading,
+              //         bracket1,
+              //         0,
+              //         START
+              //       );
+              //     }
+              //   }
+
+              //   // Add end bracket to end of current character
+              //   if (i === word.length - 1) {
+              //     char.reading = this.insertBracket(
+              //       char.reading,
+              //       bracket2,
+              //       char.reading.length - 1,
+              //       END
+              //     );
+              //   } else {
+              //     let nextChar = word[i + 1];
+              //     if (
+              //       nextChar.markup &&
+              //       nextChar.markup.markup !== markup.markup
+              //     ) {
+              //       char.reading = this.insertBracket(
+              //         char.reading,
+              //         bracket2,
+              //         char.reading.length - 1,
+              //         END
+              //       );
+              //     }
+              //   }
+              // }
             }
           }
 
