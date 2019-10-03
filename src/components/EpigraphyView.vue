@@ -318,151 +318,68 @@ export default {
           let char = word[i];
 
           // Apply markup if it has it
-          if (char.markup) {
-            let markup = char.markup;
-            // If it's a single bracket, just put insert it into the reading
-            if (markup.markup in MARKUP_CHARACTERS) {
-              let markupChar = MARKUP_CHARACTERS[markup.markup];
-              if (markupChar.position === 1) {
-                char.reading += markupChar.reading;
-              } else if (markupChar.position === -1) {
-                char.reading = markupChar.reading + char.reading;
-              }
-            }
+          if (char.markups) {
+            for (let j = 0; j < char.markups.length; j++) {
+              let markup = char.markups[j];
+              // If it's a bracket, insert the bracket into the appropriate place,
+              // may be in a following or previous character
+              if (markup.markup in MARKUP_BRACKETS) {
+                let bracket1 = MARKUP_BRACKETS[markup.markup][0];
+                let bracket2 = MARKUP_BRACKETS[markup.markup][1];
 
-            // If it's a bracket, insert the bracket into the appropriate place,
-            // may be in a following or previous character
-            if (markup.markup in MARKUP_BRACKETS) {
-              let bracket1 = MARKUP_BRACKETS[markup.markup][0];
-              let bracket2 = MARKUP_BRACKETS[markup.markup][1];
+                let startPos = markup.start_char;
+                let endPos = markup.end_char;
+                let addedStartChar = false;
 
-              let startPos = markup.start_char;
-              let endPos = markup.end_char;
-              let addedStartChar = false;
-
-              if (startPos === 0) {
-                if (
-                  i === 0 ||
-                  !word[i - 1].markup ||
-                  word[i - 1].markup.markup !== markup.markup
-                ) {
-                  char.reading = bracket1 + char.reading;
+                if (startPos === 0) {
+                  if (
+                    i === 0 ||
+                    !word[i - 1].markups ||
+                    word[i - 1].markups[0].markup !== markup.markup
+                  ) {
+                    char.reading = bracket1 + char.reading;
+                    addedStartChar = true;
+                  }
+                } else {
+                  char.reading = this.insertBracket(
+                    char.reading,
+                    bracket1,
+                    startPos
+                  );
                   addedStartChar = true;
                 }
-              } else {
-                char.reading = this.insertBracket(
-                  char.reading,
-                  bracket1,
-                  startPos
-                );
-                addedStartChar = true;
+
+                if (endPos === 0) {
+                  if (
+                    i === word.length - 1 ||
+                    !word[i + 1].markups ||
+                    !word[i + 1].markups.some(
+                      markupItem => markupItem.markup === markup.markup
+                    )
+                  ) {
+                    char.reading = char.reading + bracket2;
+                  }
+                } else {
+                  if (addedStartChar) {
+                    endPos++;
+                  }
+                  char.reading = this.insertBracket(
+                    char.reading,
+                    bracket2,
+                    endPos
+                  );
+                }
               }
 
-              if (endPos === 0) {
-                if (
-                  i === word.length - 1 ||
-                  !word[i + 1].markup ||
-                  word[i + 1].markup.markup !== markup.markup
-                ) {
-                  char.reading = char.reading + bracket2;
+              // If it's a single bracket, just put insert it into the reading
+              if (markup.markup in MARKUP_CHARACTERS) {
+                let markupChar = MARKUP_CHARACTERS[markup.markup];
+                if (markupChar.position === 1) {
+                  char.reading += markupChar.reading;
+                } else if (markupChar.position === -1) {
+                  char.reading = markupChar.reading + char.reading;
                 }
-              } else {
-                if (addedStartChar) {
-                  endPos++;
-                }
-                char.reading = this.insertBracket(
-                  char.reading,
-                  bracket2,
-                  endPos
-                );
               }
-              // if (startPos > 0 && endPos > 0) {
-              //   char.reading = this.insertBracket(
-              //     char.reading,
-              //     bracket2,
-              //     endPos,
-              //     END
-              //   );
-              //   char.reading = this.insertBracket(
-              //     char.reading,
-              //     bracket1,
-              //     startPos,
-              //     START
-              //   );
-              // } else if (startPos === 0 && endPos > 0) {
-              //   char.reading = this.insertBracket(
-              //     char.reading,
-              //     bracket2,
-              //     endPos,
-              //     END
-              //   );
-              //   if (
-              //     i === 0 ||
-              //     (i > 0 && word[i - 1].markup.markup !== markup.markup)
-              //   ) {
-              //     char.reading = this.insertBracket(
-              //       char.reading,
-              //       bracket1,
-              //       0,
-              //       START
-              //     );
-              //   }
-              //   // TODO Insert end bracket
-              // } else if (startPos > 0 && endPos === 0) {
-              //   char.reading = this.insertBracket(
-              //     char.reading,
-              //     bracket1,
-              //     startPos,
-              //     START
-              //   );
-              // } else if (startPos === 0 && endPos === 0) {
-              //   if (i === 0) {
-              //     // Insert bracket at beginning of character because it's 0 and nothing before
-              //     char.reading = this.insertBracket(
-              //       char.reading,
-              //       bracket1,
-              //       0,
-              //       START
-              //     );
-              //   } else {
-              //     // Check if the previous character had the same bracket. If not, add it at the beginning
-              //     let prevChar = word[i - 1];
-              //     if (
-              //       prevChar.markup &&
-              //       prevChar.markup.markup !== markup.markup
-              //     ) {
-              //       char.reading = this.insertBracket(
-              //         char.reading,
-              //         bracket1,
-              //         0,
-              //         START
-              //       );
-              //     }
-              //   }
-
-              //   // Add end bracket to end of current character
-              //   if (i === word.length - 1) {
-              //     char.reading = this.insertBracket(
-              //       char.reading,
-              //       bracket2,
-              //       char.reading.length - 1,
-              //       END
-              //     );
-              //   } else {
-              //     let nextChar = word[i + 1];
-              //     if (
-              //       nextChar.markup &&
-              //       nextChar.markup.markup !== markup.markup
-              //     ) {
-              //       char.reading = this.insertBracket(
-              //         char.reading,
-              //         bracket2,
-              //         char.reading.length - 1,
-              //         END
-              //       );
-              //     }
-              //   }
-              // }
             }
           }
 
