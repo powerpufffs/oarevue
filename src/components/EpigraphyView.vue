@@ -29,6 +29,7 @@
 import axios from "axios";
 import Constants from "../constants";
 const LOGOGRAM = 2;
+const PHONOGRAM = 1;
 const SPECIAL_PHONOGRAM = 0;
 const MARKUP_BRACKETS = {
   1: "[]",
@@ -49,11 +50,11 @@ const MARKUP_CHARACTERS = {
     position: -1
   },
   9: {
-    reading: "<sup>!</sup>",
+    reading: "!",
     position: 1
   },
   10: {
-    reading: "<sup>?</sup>",
+    reading: "?",
     position: 1
   },
   11: {
@@ -104,6 +105,21 @@ export default {
         this.getEpigraphyInfo();
       },
       immediate: true
+    }
+  },
+
+  computed: {
+    markupChars() {
+      let chars = [];
+      for (const [key, val] of Object.entries(MARKUP_BRACKETS)) {
+        chars.push(val[0]);
+        chars.push(val[1]);
+      }
+
+      for (const [key, val] of Object.entries(MARKUP_CHARACTERS)) {
+        chars.push(val.reading);
+      }
+      return chars;
     }
   },
 
@@ -304,6 +320,41 @@ export default {
     },
 
     /**
+     * Take a phonogram with epigraphic markup and italicize it.
+     *
+     * @arg {string} phonogram The phonogram to italicize
+     */
+    italicizePhonogram(phonogram) {
+      return phonogram
+        .split("")
+        .map(char => {
+          if (this.markupChars.includes(char) || char === "|") {
+            return char;
+          } else {
+            return `<em>${char}</em>`;
+          }
+        })
+        .join("");
+    },
+
+    /**
+     * ! and ? should be superscripted, call this after
+     * italicizePhonogram
+     */
+    superscriptMarkups(character) {
+      let superscripted = ''
+      for (let i = 0; i < character.length; i++) {
+        let char = character[i];
+        if (char === "!" || char === "?") {
+          superscripted += `<sup>${char}</sup>`
+        } else {
+          superscripted += char
+        }
+      }
+      return superscripted;
+    },
+
+    /**
      * Text representation of the reading of a line
      *
      * @arg {number} line The line number to get the text of.
@@ -383,12 +434,16 @@ export default {
             }
           }
 
+          if (char.type === PHONOGRAM) {
+            char.reading = this.italicizePhonogram(char.reading);
+          }
+          char.reading = this.superscriptMarkups(char.reading);
           wordReading += char.reading;
           // wordReading += this.formattedReading(char)
           // Join two logograms with periods
 
           if (i !== word.length - 1) {
-            if (char.type == LOGOGRAM && word[i + 1].type == LOGOGRAM) {
+            if (char.type === LOGOGRAM && word[i + 1].type === LOGOGRAM) {
               if (char.numberVal && word[i + 1].numberVal) {
                 wordReading += "+";
               } else {
