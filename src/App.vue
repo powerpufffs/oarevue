@@ -1,7 +1,9 @@
 <template>
-  <v-app>
+  <LandingPage v-if="$route.path==='/landing'" />
+  <v-app v-else>
     <v-navigation-drawer
       app
+      color="#002E5D"
       dark
       clipped
       v-model="drawer"
@@ -35,7 +37,7 @@
         />
       </div>
     </v-navigation-drawer>
-    <v-app-bar app dark clipped-left>
+    <v-app-bar app color="#002E5D" dark clipped-left>
       <v-app-bar-nav-icon @click="drawer = !drawer" />
       <v-toolbar-title>{{ toolbarTitle }}</v-toolbar-title>
     </v-app-bar>
@@ -51,14 +53,19 @@
 <script>
 import axios from "axios";
 import Constants from "./constants";
+import LandingPage from "./components/LandingPage";
 
 export default {
   name: "app",
+  components: {
+    LandingPage
+  },
   data() {
     return {
       active: [],
       data: [],
       drawer: true,
+      landing: true,
       searchText: "",
       sidebarLoading: false
     };
