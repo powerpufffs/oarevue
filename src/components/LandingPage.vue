@@ -6,12 +6,7 @@
           <v-row>
             <v-col v-if="$vuetify.breakpoint.smAndUp" sm="2">
               <a href="https://byu.edu" target="_blank">
-                <v-img
-                  src="../../static/BYU_abbrev.png"
-                  class="mt-5"
-                  max-height="50px"
-                  max-width="120px"
-                />
+                <v-img src="img/BYU_abbrev.png" class="mt-5" max-height="50px" max-width="120px" />
               </a>
             </v-col>
             <v-col cols="10" sm="9" offset-sm="1">
@@ -53,18 +48,13 @@
             <p>OARE graciously thanks the following organizations for previous and/or ongoing support:</p>
             <v-row class="my-12">
               <v-col cols="12" md="5">
-                <v-img class="mx-auto" src="../../static/u_of_c.png" max-width="300" height="60" />
+                <v-img class="mx-auto" src="img/u_of_c.png" max-width="300" height="60" />
               </v-col>
               <v-col cols="12" md="5">
-                <v-img class="mx-auto" src="../../static/nccs.png" max-width="300" height="100" />
+                <v-img class="mx-auto" src="img/nccs.png" max-width="300" height="100" />
               </v-col>
               <v-col cols="12" md="2">
-                <v-img
-                  class="mx-auto"
-                  src="../../static/byu_circle.png"
-                  max-width="100"
-                  height="100"
-                />
+                <v-img class="mx-auto" src="img/byu_circle.png" max-width="100" height="100" />
               </v-col>
             </v-row>
             <span class="subtitle-1 font-weight-bold">CONTACT</span>
@@ -84,10 +74,10 @@
       <v-img
         v-if="$vuetify.breakpoint.smAndUp"
         class="mx-auto"
-        src="../../static/byu-wordmark-ring.svg"
+        src="img/byu-wordmark-ring.svg"
         max-width="500"
       />
-      <v-img v-else class="mx-auto" src="../../static/BYU_abbrev.png" max-width="80" />
+      <v-img v-else class="mx-auto" src="img/BYU_abbrev.png" max-width="80" />
     </v-footer>
   </v-app>
 </template>
@@ -100,14 +90,6 @@ export default {
         return "OARE";
       }
       return "Old Assyrian Research Environment";
-    },
-
-    footerImg() {
-      return "../assets/BYU_abbrev.png";
-      // if (this.$vuetify.breakpoint.smAndUp) {
-      //   return "../../static/byu-wordmark-ring.svg";
-      // }
-      // return "../../static/BYU_abbrev.png";
     }
   }
 };
