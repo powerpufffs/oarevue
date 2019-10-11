@@ -4,7 +4,7 @@
       <v-toolbar-title>
         <v-container>
           <v-row>
-            <v-col cols="2">
+            <v-col v-if="$vuetify.breakpoint.smAndUp" sm="2">
               <a href="https://byu.edu" target="_blank">
                 <v-img
                   src="../../static/BYU_abbrev.png"
@@ -14,16 +14,17 @@
                 />
               </a>
             </v-col>
-            <v-col cols="9" offset="1">
+            <v-col cols="10" sm="9" offset-sm="1">
               <v-row class="subtitle-1">
                 <a
-                  id="byu_history_link"
-                  class="blue-grey--text text--lighten-3"
+                  class="blue-grey--text text--lighten-3 no_underline"
                   href="https://history.byu.edu"
                   target="_blank"
                 >History Department</a>
               </v-row>
-              <v-row class="headline">{{title}}</v-row>
+              <v-row class="headline">
+                <router-link class="white--text no_underline" to="/">{{title}}</router-link>
+              </v-row>
             </v-col>
           </v-row>
         </v-container>
@@ -45,6 +46,7 @@
                 target="_blank"
               >http://ochre.uchicago.edu</a>.
             </p>
+            <v-btn class="mb-5" dark color="#002E5D" to="/">Enter the site</v-btn>
             <p>Edward Stratford created OARE within the OCHRE platform.</p>
             <p>Director: Edward Stratford</p>
             <p>Editorial Board: Gojko Barjamovic, Hakan Erol, and Edward Stratford.</p>
@@ -78,8 +80,14 @@
       </v-container>
     </v-content>
 
-    <v-footer app dark color="#002E5D" class="py-4">
-      <v-img class="mx-auto" src="../../static/byu-wordmark-ring.svg" max-width="500" />
+    <v-footer app absolute dark color="#002E5D" class="py-4">
+      <v-img
+        v-if="$vuetify.breakpoint.smAndUp"
+        class="mx-auto"
+        src="../../static/byu-wordmark-ring.svg"
+        max-width="500"
+      />
+      <v-img v-else class="mx-auto" src="../../static/BYU_abbrev.png" max-width="80" />
     </v-footer>
   </v-app>
 </template>
@@ -88,17 +96,25 @@
 export default {
   computed: {
     title() {
-      if (this.$vuetify.breakpoint.xsAndDown) {
+      if (this.$vuetify.breakpoint.xsOnly) {
         return "OARE";
       }
       return "Old Assyrian Research Environment";
+    },
+
+    footerImg() {
+      return "../assets/BYU_abbrev.png";
+      // if (this.$vuetify.breakpoint.smAndUp) {
+      //   return "../../static/byu-wordmark-ring.svg";
+      // }
+      // return "../../static/BYU_abbrev.png";
     }
   }
 };
 </script>
 
 <style scoped>
-#byu_history_link {
+.no_underline {
   text-decoration: none;
 }
 </style>

@@ -9,6 +9,14 @@
 
 <script>
 export default {
-  name: "home"
+  name: "home",
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      if (!vm.$store.getters.landed) {
+        vm.$store.commit('setLanded')
+        vm.$router.replace("/landing");
+      }
+    });
+  }
 };
 </script>

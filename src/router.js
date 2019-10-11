@@ -3,7 +3,6 @@ import Router from 'vue-router'
 import Home from './views/Home'
 import DictionaryView from './components/DictionaryView'
 import EpigraphyView from './components/EpigraphyView'
-import LandingPage from './components/LandingPage'
 
 Vue.use(Router)
 
@@ -14,12 +13,7 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Home
-    },
-    {
-      path: '/landing',
-      name: 'landing',
-      component: LandingPage
+      component: Home,
     },
     {
       path: '/dictionary/:wordId',
