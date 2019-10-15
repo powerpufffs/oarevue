@@ -28,6 +28,7 @@
                   <v-btn flat color="primary">Register</v-btn>
                 </v-flex>
               </v-col>
+              
             </v-row>
       </v-col>
     </v-flex>

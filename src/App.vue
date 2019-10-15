@@ -49,7 +49,6 @@
 
 <script>
 import SignInView from "./components/SignInView";
-import Navbar from './components/Navbar'
 import axios from "axios";
 import Constants from "./constants";
 import LandingPage from "./components/LandingPage";
@@ -58,7 +57,6 @@ export default {
   name: "app",
   components: {
     SignInView,
-    Navbar,
     LandingPage
   },
   data() {
