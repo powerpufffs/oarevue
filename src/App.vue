@@ -7,6 +7,7 @@
       clipped
       v-model="drawer"
       :mobile-break-point="$vuetify.breakpoint.thresholds.sm"
+      color="#002E5D"
     >
       <v-text-field
         v-model="searchText"
@@ -36,10 +37,7 @@
         />
       </div>
     </v-navigation-drawer>
-    <v-app-bar app dark clipped-left>
-      <v-app-bar-nav-icon @click="drawer = !drawer" />
-      <v-toolbar-title>{{ toolbarTitle }}</v-toolbar-title>
-    </v-app-bar>
+    <OareAppBar @nav-icon-click="drawer = !drawer" />
 
     <v-content class="blue-grey lighten-4">
       <v-container fluid>
@@ -75,12 +73,6 @@ export default {
         return this.active[0];
       }
       return undefined;
-    },
-    toolbarTitle() {
-      if (this.$vuetify.breakpoint.xs) {
-        return "OARE";
-      }
-      return "Old Assyrian Research Environment Database";
     }
   },
   watch: {

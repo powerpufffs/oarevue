@@ -269,11 +269,6 @@ export default {
               this.addDiscourse(discourses, row.discourse_unit_id);
             }
             let charIndex = row.char_in_word;
-            // let reading = {
-            //   type: row.type,
-            //   reading: row.reading,
-            //   numberVal: row.number_val
-            // };
             if (charIndex === null) {
               // Divider
               lineTexts[lineNum].push(curWord);
@@ -342,16 +337,144 @@ export default {
      * italicizePhonogram
      */
     superscriptMarkups(character) {
-      let superscripted = ''
+      let superscripted = "";
       for (let i = 0; i < character.length; i++) {
         let char = character[i];
         if (char === "!" || char === "?") {
-          superscripted += `<sup>${char}</sup>`
+          superscripted += `<sup>${char}</sup>`;
         } else {
-          superscripted += char
+          superscripted += char;
         }
       }
       return superscripted;
+    },
+
+    /**
+     * Apply markup to a character
+     *
+     * @arg {object} char A character object
+     * @arg {array} word The array of characters
+     * @arg {number} charPos The position in `word` of char
+     * @arg {array} line An array of words
+     * @arg {number} wordPos The position in `line` of word
+     *
+     * @return {string} The reading of char with markup applied, if applicable
+     */
+    applyMarkup(char, word, charPos, line, wordPos) {
+      if (char.markups) {
+        // if (char.line === "40" && char.reading === "nu") {
+        //   debugger;
+        // }
+        let reading = char.reading;
+        for (let i = 0; i < char.markups.length; i++) {
+          let markup = char.markups[i];
+
+          if (markup.markup in MARKUP_BRACKETS) {
+            const startPos = markup.start_char;
+            const endPos = markup.end_char;
+
+            const bracket1 = MARKUP_BRACKETS[markup.markup][0];
+            const bracket2 = MARKUP_BRACKETS[markup.markup][1];
+
+            if (startPos === 0) {
+              // Check that the previous character does not have the same
+              // markup character at its end
+              let prevChar;
+              if (charPos > 0) {
+                prevChar = word[charPos - 1];
+              } else if (wordPos > 0) {
+                prevChar = line[wordPos - 1][line[wordPos - 1].length - 1];
+              }
+
+              if (prevChar && prevChar.markups) {
+                // Equals -1 if the previous character does not have the same markup
+                let prevMarkupIndex = prevChar.markups.findIndex(
+                  m => m.markup === markup.markup
+                );
+                if (prevMarkupIndex >= 0) {
+                  if (prevChar.markups[prevMarkupIndex].end_char > 0) {
+                    reading = bracket1 + reading;
+                  }
+                } else {
+                  reading = bracket1 + reading;
+                }
+              } else {
+                reading = bracket1 + reading;
+              }
+            } else {
+              // Insert bracket at given index
+              reading = this.insertBracket(reading, bracket1, startPos);
+            }
+
+            if (endPos === 0) {
+              let nextChar;
+              if (charPos < word.length - 1) {
+                nextChar = word[charPos + 1];
+              } else if (wordPos < line.length - 1) {
+                nextChar = line[wordPos + 1][0];
+              }
+
+              // Check that the next character does not have the same markup
+              // character at its beginning
+              if (nextChar && nextChar.markups) {
+                let nextMarkupIndex = nextChar.markups.findIndex(
+                  m => m.markup === markup.markup
+                );
+
+                if (nextMarkupIndex >= 0) {
+                  if (nextChar.markups[nextMarkupIndex].start_char > 0) {
+                    reading = reading + bracket2;
+                  }
+                } else {
+                  reading = reading + bracket2;
+                }
+              } else {
+                reading = reading + bracket2;
+              }
+            } else {
+              reading = this.insertBracket(reading, bracket2, endPos);
+            }
+          } else if (markup.markup in MARKUP_CHARACTERS) {
+            let markupChar = MARKUP_CHARACTERS[markup.markup];
+            if (markupChar.position === 1) {
+              reading = reading + markupChar.reading;
+            } else if (markupChar.position === -1) {
+              reading = markupChar.reading + reading;
+            }
+          }
+        }
+        return reading;
+      }
+      return char.reading;
+    },
+
+    /**
+     * Get a '.' or '-' separator depending on if char is a logogram or phonogram
+     *
+     * @arg {object} char The character being examined
+     * @arg {array} word An array of characters
+     * @arg {number} charPos The position in `word` of `char`
+     *
+     * @returns {string} The appropriate separator, or empty string if not applicable
+     */
+    getSeparator(char, word, charPos) {
+      if (charPos !== word.length - 1) {
+        if (char.type === LOGOGRAM && word[charPos + 1].type === LOGOGRAM) {
+          // Two numbers next to each other
+          if (char.number_val && word[charPos + 1].number_val) {
+            return "+";
+          }
+          // Two normal logograms
+          else {
+            return ".";
+          }
+        }
+        // One is a phonogram
+        else {
+          return "-";
+        }
+      }
+      return "";
     },
 
     /**
@@ -362,103 +485,147 @@ export default {
     lineText(line) {
       let words = [];
 
-      line.forEach(word => {
-        let wordReading = "";
+      for (let i = 0; i < line.length; i++) {
+        let word = line[i];
+        let wordReading = [];
+        for (let j = 0; j < word.length; j++) {
+          let char = word[j];
 
-        for (let i = 0; i < word.length; i++) {
-          let char = word[i];
-
-          // Apply markup if it has it
-          if (char.markups) {
-            for (let j = 0; j < char.markups.length; j++) {
-              let markup = char.markups[j];
-              // If it's a bracket, insert the bracket into the appropriate place,
-              // may be in a following or previous character
-              if (markup.markup in MARKUP_BRACKETS) {
-                let bracket1 = MARKUP_BRACKETS[markup.markup][0];
-                let bracket2 = MARKUP_BRACKETS[markup.markup][1];
-
-                let startPos = markup.start_char;
-                let endPos = markup.end_char;
-                let addedStartChar = false;
-
-                if (startPos === 0) {
-                  if (
-                    i === 0 ||
-                    !word[i - 1].markups ||
-                    word[i - 1].markups[0].markup !== markup.markup
-                  ) {
-                    char.reading = bracket1 + char.reading;
-                    addedStartChar = true;
-                  }
-                } else {
-                  char.reading = this.insertBracket(
-                    char.reading,
-                    bracket1,
-                    startPos
-                  );
-                  addedStartChar = true;
-                }
-
-                if (endPos === 0) {
-                  if (
-                    i === word.length - 1 ||
-                    !word[i + 1].markups ||
-                    !word[i + 1].markups.some(
-                      markupItem => markupItem.markup === markup.markup
-                    )
-                  ) {
-                    char.reading = char.reading + bracket2;
-                  }
-                } else {
-                  if (addedStartChar) {
-                    endPos++;
-                  }
-                  char.reading = this.insertBracket(
-                    char.reading,
-                    bracket2,
-                    endPos
-                  );
-                }
-              }
-
-              // If it's a single bracket, just put insert it into the reading
-              if (markup.markup in MARKUP_CHARACTERS) {
-                let markupChar = MARKUP_CHARACTERS[markup.markup];
-                if (markupChar.position === 1) {
-                  char.reading += markupChar.reading;
-                } else if (markupChar.position === -1) {
-                  char.reading = markupChar.reading + char.reading;
-                }
-              }
-            }
-          }
-
+          let charReading = this.applyMarkup(char, word, j, line, i);
+          // let charReading = char.reading;
           if (char.type === PHONOGRAM) {
-            char.reading = this.italicizePhonogram(char.reading);
+            charReading = this.italicizePhonogram(charReading);
           }
-          char.reading = this.superscriptMarkups(char.reading);
-          wordReading += char.reading;
-          // wordReading += this.formattedReading(char)
-          // Join two logograms with periods
-
-          if (i !== word.length - 1) {
-            if (char.type === LOGOGRAM && word[i + 1].type === LOGOGRAM) {
-              if (char.numberVal && word[i + 1].numberVal) {
-                wordReading += "+";
-              } else {
-                wordReading += ".";
-              }
-            } else {
-              wordReading += "-";
-            }
-          }
+          charReading = this.superscriptMarkups(charReading);
+          wordReading.push(charReading);
+          wordReading.push(this.getSeparator(char, word, j));
         }
-        // Add the last character
-        // wordReading += this.formattedReading(word[word.length - 1]);
-        words.push(wordReading);
-      });
+        words.push(wordReading.join(""));
+      }
       return words.join(" ");
+
+      // for (let k = 0; k < line.length; k++) {
+      //   let word = line[k];
+      //   let wordReading = "";
+
+      //   for (let i = 0; i < word.length; i++) {
+      //     let char = word[i];
+
+      //     // Apply markup if it has it
+      //     if (char.markups) {
+      //       for (let j = 0; j < char.markups.length; j++) {
+      //         let markup = char.markups[j];
+      //         // If it's a bracket, insert the bracket into the appropriate place,
+      //         // may be in a following or previous character
+      //         if (markup.markup in MARKUP_BRACKETS) {
+      //           let bracket1 = MARKUP_BRACKETS[markup.markup][0];
+      //           let bracket2 = MARKUP_BRACKETS[markup.markup][1];
+
+      //           let startPos = markup.start_char;
+      //           let endPos = markup.end_char;
+      //           let addedStartChar = false;
+
+      //           // May be a continuation from previous char or word
+      //           if (startPos === 0) {
+      //             // If it's not a continuation, insert the bracket
+      //             // at the beginning of the character
+      //             if (
+      //               i === 0 ||
+      //               !word[i - 1].markups ||
+      //               word[i - 1].markups[0].markup !== markup.markup
+      //             ) {
+      //               if (char.line === "33") {
+      //                 debugger;
+      //               }
+
+      //               if (
+      //                 i === 0 &&
+      //                 !(
+      //                   k > 0 &&
+      //                   line[k - 1][line[k - 1].length - 1].markups &&
+      //                   line[k - 1][line[k - 1].length - 1].markups[0]
+      //                     .markup === markup.markup
+      //                 )
+      //               ) {
+      //                 char.reading = bracket1 + char.reading;
+      //                 addedStartChar = true;
+      //               }
+      //             }
+      //           }
+
+      //           // Insert bracket at normal position
+      //           else {
+      //             char.reading = this.insertBracket(
+      //               char.reading,
+      //               bracket1,
+      //               startPos
+      //             );
+      //             addedStartChar = true;
+      //           }
+
+      //           // May be a continuation of the previous character
+      //           if (endPos === 0) {
+      //             // Check that next char or word doesn't have the same character
+      //             if (
+      //               i === word.length - 1 ||
+      //               !word[i + 1].markups ||
+      //               !word[i + 1].markups.some(
+      //                 markupItem => markupItem.markup === markup.markup
+      //               )
+      //             ) {
+      //               char.reading = char.reading + bracket2;
+      //             }
+      //           }
+
+      //           // Insert bracket at the normal ending position
+      //           else {
+      //             if (addedStartChar) {
+      //               endPos++;
+      //             }
+      //             char.reading = this.insertBracket(
+      //               char.reading,
+      //               bracket2,
+      //               endPos
+      //             );
+      //           }
+      //         }
+
+      //         // If it's a single bracket, just put insert it into the reading
+      //         if (markup.markup in MARKUP_CHARACTERS) {
+      //           let markupChar = MARKUP_CHARACTERS[markup.markup];
+      //           if (markupChar.position === 1) {
+      //             char.reading += markupChar.reading;
+      //           } else if (markupChar.position === -1) {
+      //             char.reading = markupChar.reading + char.reading;
+      //           }
+      //         }
+      //       }
+      //     }
+
+      //     if (char.type === PHONOGRAM) {
+      //       char.reading = this.italicizePhonogram(char.reading);
+      //     }
+      //     char.reading = this.superscriptMarkups(char.reading);
+      //     wordReading += char.reading;
+      //     // Join two logograms with periods
+
+      //     if (i !== word.length - 1) {
+      //       if (char.type === LOGOGRAM && word[i + 1].type === LOGOGRAM) {
+      //         if (char.numberVal && word[i + 1].numberVal) {
+      //           wordReading += "+";
+      //         } else {
+      //           wordReading += ".";
+      //         }
+      //       } else {
+      //         wordReading += "-";
+      //       }
+      //     }
+      //   }
+      //   // Add the last character
+      //   // wordReading += this.formattedReading(word[word.length - 1]);
+      //   words.push(wordReading);
+      // }
+      // return words.join(" ");
     },
 
     /**

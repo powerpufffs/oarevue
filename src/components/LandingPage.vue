@@ -1,34 +1,7 @@
 <template>
   <v-app>
-    <v-app-bar app dark color="#002E5D" class="pa-3 mb-3" flat>
-      <v-toolbar-title>
-        <v-container>
-          <v-row>
-            <v-col v-if="$vuetify.breakpoint.smAndUp" sm="2">
-              <a href="https://byu.edu" target="_blank">
-                <v-img src="img/BYU_abbrev.png" class="mt-5" max-height="50px" max-width="120px" />
-              </a>
-            </v-col>
-            <v-col cols="10" sm="9" offset-sm="1">
-              <v-row class="subtitle-1">
-                <a
-                  class="blue-grey--text text--lighten-3 no_underline"
-                  href="https://history.byu.edu"
-                  target="_blank"
-                >History Department</a>
-              </v-row>
-              <v-row class="headline">
-                <router-link class="white--text no_underline" to="/">{{title}}</router-link>
-              </v-row>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-toolbar-title>
-    </v-app-bar>
-
-    <!-- Sizes your content based upon application components -->
+    <OareAppBar />
     <v-content class="mt-5">
-      <!-- Provides the application the proper gutter -->
       <v-container fluid>
         <v-row>
           <v-col cols="0" md="1" lg="2" />
@@ -69,34 +42,13 @@
         </v-row>
       </v-container>
     </v-content>
-
-    <v-footer app absolute dark color="#002E5D" class="py-4">
-      <v-img
-        v-if="$vuetify.breakpoint.smAndUp"
-        class="mx-auto"
-        src="img/byu-wordmark-ring.svg"
-        max-width="500"
-      />
-      <v-img v-else class="mx-auto" src="img/BYU_abbrev.png" max-width="80" />
-    </v-footer>
+    <OareFooter />
   </v-app>
 </template>
 
 <script>
-export default {
-  computed: {
-    title() {
-      if (this.$vuetify.breakpoint.xsOnly) {
-        return "OARE";
-      }
-      return "Old Assyrian Research Environment";
-    }
-  }
-};
+export default {};
 </script>
 
 <style scoped>
-.no_underline {
-  text-decoration: none;
-}
 </style>
