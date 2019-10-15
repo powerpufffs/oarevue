@@ -35,7 +35,6 @@
 </template>
 
 <script>
-import ContentView from "./ContentView";
 
 export default {
   name: "edituser",

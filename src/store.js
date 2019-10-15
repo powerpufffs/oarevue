@@ -5,12 +5,19 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-
+    landed: false
   },
   mutations: {
-
+    setLanded(state) {
+      state.landed = true
+    }
   },
   actions: {
 
+  },
+  getters: {
+    landed(state) {
+      return state.landed
+    }
   }
 })

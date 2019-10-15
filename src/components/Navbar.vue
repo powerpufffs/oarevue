@@ -45,9 +45,7 @@
 
     <v-content app class="blue-grey lighten-4 pt-4 mt-5">
       <v-container class="px-3 py-3" fluid>
-        <ContentView>
           <router-view />
-        </ContentView>
       </v-container>
     </v-content>
   </v-app>
@@ -56,13 +54,11 @@
 <script>
 import SignInView from "./SignInView";
 import OareSidebar from "./OareSidebar";
-import ContentView from "./ContentView";
 import axios from "axios";
 export default {
   name: "nvabar",
   components: {
-    OareSidebar,
-    ContentView
+    OareSidebar
   },
   data() {
     return {

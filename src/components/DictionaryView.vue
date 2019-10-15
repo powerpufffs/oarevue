@@ -1,51 +1,37 @@
 <template>
-  <div class="p-12">
-    <v-progress-linear
-      indeterminate
-      v-if="loading"
-    />
+  <OareContentView :title="word">
+    <v-progress-linear indeterminate v-if="loading" />
     <div v-else>
-      <h1 class="display-1 mb-1 font-weight-bold pl-1">{{ word }}</h1>
-      <div class="block h-1 bg-gray-200" />
       <div class="flex justify-start items-baseline mt-5 pl-2">
-        <h3 class="headline mr-20 w-32">Definitions</h3>
-        <ul>
-          <li
-            v-for="(definition, index) in definitions"
-            :key="index"
-            class="title font-weight-light italic"
-          >
-            {{ definition.definition }} 
-          </li>
-        </ul>
+        <OareSubheader>{{ definitionSubheader }}</OareSubheader>
+        <OareListItem
+          v-for="(definition, index) in definitions"
+          :key="index"
+        >{{ definition.definition }}</OareListItem>
       </div>
       <div class="flex flex-row justify-start items-baseline mt-4 pl-2">
-        <h3 class="headline mr-20 w-32">Forms</h3>
-        <ul >
-          <li
-            v-for="(form, index) in forms"
-            :key="index"
-            class="title font-weight-regular mt-2"
-          >
-            <span class="font-weight-medium">{{ form.form }}: </span>
-            {{ spellingsList(form.spellings) }}
-          </li>
-        </ul>
+        <OareSubheader>Forms</OareSubheader>
+        <OareListItem v-for="(form, index) in forms" :key="index">
+          <span class="font-weight-medium">{{ form.form }}:</span>
+          {{ spellingsList(form.spellings) }}
+        </OareListItem>
       </div>
     </div>
-  </div>
+  </OareContentView>
 </template>
 
 <script>
-import axios from 'axios'
+import axios from "axios";
+import Constants from "../constants";
+
 export default {
-  name: 'DictionaryView',
+  name: "DictionaryView",
   props: {
     wordId: {
       // eslint-disable-next-line
       type: Number | String,
       required: true
-    },
+    }
   },
 
   data() {
@@ -54,48 +40,66 @@ export default {
       forms: [],
       loading: false,
       word: ""
-    }
+    };
   },
 
   methods: {
     spellingsList(spellingsArray) {
-      let spellings = []
+      let spellings = [];
       spellingsArray.forEach(spelling => {
-        spellings.push(spelling.spelling)
-      })
-      return spellings.join(', ')
+        spellings.push(spelling.spelling);
+      });
+      return spellings.join(", ");
     },
-    async getWordInfo() { 
-      this.loading = true
-      let result = await axios.get('https://oare-test.herokuapp.com/api/dictionaryWords/'
-        + this.wordId)
-      this.loading = false
-      let data = result.data
-      this.word = data.word
-      this.definitions = []
-      this.forms = []
+    async getWordInfo() {
+      this.loading = true;
+      let result = await axios.get(
+        `${Constants.API_PATH}/dictionaryWords/${this.wordId}`
+      );
+      this.loading = false;
+      let data = result.data;
+      this.word = data.word;
+      this.definitions = [];
+      this.forms = [];
       data.definitions.forEach(definition => {
         this.definitions.push({
           ...definition
-        })
-      })
+        });
+      });
 
       data.forms.forEach(form => {
         this.forms.push({
           ...form
-        })
-      })
+        });
+      });
     }
   },
 
-  created () {
-    this.getWordInfo()
+  computed: {
+    /**
+     * Words in the onomasticon should show a subheader of
+     * "Translation" for the dictionary definitions.
+     * Check the `onom` GET param for if it's
+     * in the onomasticon or not.
+     */
+    definitionSubheader() {
+      if (
+        this.$route.query.hasOwnProperty("onom") &&
+        this.$route.query.onom === true
+      ) {
+        return "Translation";
+      }
+      return "Definitions";
+    }
   },
 
   watch: {
-    wordId() {
-      this.getWordInfo()
+    wordId: {
+      handler() {
+        this.getWordInfo();
+      },
+      immediate: true
     }
-  },
-}
+  }
+};
 </script>
