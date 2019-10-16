@@ -57,7 +57,7 @@ export default {
     };
   },
   methods: {
-      handleSubmit(e) {
+      handleSubmit() {
           this.$validator.validate().then(valid => {
               if (valid) {
                   alert("success");

@@ -111,12 +111,14 @@ export default {
   computed: {
     markupChars() {
       let chars = [];
-      for (const [key, val] of Object.entries(MARKUP_BRACKETS)) {
+      for (const key in MARKUP_BRACKETS) {
+        const val = MARKUP_BRACKETS[key]
         chars.push(val[0]);
         chars.push(val[1]);
       }
 
-      for (const [key, val] of Object.entries(MARKUP_CHARACTERS)) {
+      for (const key in MARKUP_CHARACTERS) {
+        const val = MARKUP_CHARACTERS[key]
         chars.push(val.reading);
       }
       return chars;

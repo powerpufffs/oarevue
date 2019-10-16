@@ -48,7 +48,6 @@
 </template>
 
 <script>
-import SignInView from "./components/SignInView";
 import axios from "axios";
 import Constants from "./constants";
 import LandingPage from "./components/LandingPage";
@@ -56,7 +55,6 @@ import LandingPage from "./components/LandingPage";
 export default {
   name: "app",
   components: {
-    SignInView,
     LandingPage
   },
   data() {

@@ -26,7 +26,7 @@
     </v-toolbar-title>
     <v-spacer />
     <v-btn text to="/landing">About</v-btn>
-    <v-btn text>Login</v-btn>
+    <v-btn text to="/login">Login</v-btn>
   </v-app-bar>
 </template>
 

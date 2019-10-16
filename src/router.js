@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home'
+import Home from './components/Home'
 import DictionaryView from './components/DictionaryView'
 import EpigraphyView from './components/EpigraphyView'
-import SignInView from './components/SignInView'
+import LoginView from './components/LoginView'
 import RegisterView from './components/RegisterView'
 import EditUserView from './components/EditUserView'
 
@@ -15,8 +15,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'signin',
-      component: SignInView
+      component: Home
     },
     {
       path: '/home',
@@ -36,9 +35,9 @@ export default new Router({
       props: true
     },
     {
-      path: '/signin',
-      name: 'signin',
-      component: SignInView
+      path: '/login',
+      name: 'login',
+      component: LoginView
     },
     {
       path: '/register',

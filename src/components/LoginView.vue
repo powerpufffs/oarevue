@@ -2,7 +2,7 @@
   <v-layout justify-space-between>
     <v-flex xs10 sm6 offset-sm3>
       <v-col align-self="align">
-        <v-card class="w-full mt-12 p-3 mx-auto" :style="classes" :width="450" :elevation="24">
+        <v-card class="w-full mt-12 p-3 mx-auto" width="450" elevation="24">
           <v-card-title primary-title>
             <div>
               <h3 class="headline mb-2 text-center">Sign In</h3>
@@ -35,7 +35,7 @@
 <script>
 
 export default {
-  name: "signin",
+  name: "login",
   data() {
     return {
       email: "",
