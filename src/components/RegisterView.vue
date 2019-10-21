@@ -13,6 +13,7 @@
           name="repeatpassword"
           type="password"
         ></v-text-field>
+        <p class="subtitle error--text">{{errorMsg}}</p>
         <v-btn text class="text-none" to="/login">Already have an account? Login</v-btn>
       </form>
     </template>
@@ -24,6 +25,7 @@
 </template>
 
 <script>
+import { EventBus } from "../utils/index";
 export default {
   name: "register",
   data() {
@@ -36,8 +38,15 @@ export default {
         firstname: "",
         lastname: "",
         organization: ""
-      }
+      },
+      errorMsg: ""
     };
+  },
+
+  mounted() {
+    EventBus.$on("registerFailure", msg => {
+      this.errorMsg = msg;
+    });
   },
   methods: {
     async register() {
@@ -46,13 +55,11 @@ export default {
         last_name: this.user.lastname,
         password: this.user.password,
         email: this.user.email
-      }
+      };
 
-      let success = await this.$store.dispatch('register', userData)
-      if(success) {
-        this.$router.push('/landing')
-      } else {
-        console.log('register failure')
+      let success = await this.$store.dispatch("register", userData);
+      if (success) {
+        this.$router.push("/landing");
       }
     },
     handleSubmit() {

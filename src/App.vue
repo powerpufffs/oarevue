@@ -51,6 +51,7 @@
 import axios from "axios";
 import Constants from "./constants";
 import LandingPage from "./components/LandingPage";
+import { isValidJwt } from "./utils/index";
 
 export default {
   name: "app",
@@ -66,6 +67,14 @@ export default {
       searchText: "",
       sidebarLoading: false
     };
+  },
+  mounted() {
+    const jwt = localStorage.getItem("jwt");
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (jwt && isValidJwt(jwt) && user) {
+      this.$store.commit("setJwt", jwt);
+      this.$store.commit("setUser", user);
+    }
   },
   computed: {
     selected() {
