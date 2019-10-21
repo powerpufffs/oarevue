@@ -26,7 +26,10 @@
     </v-toolbar-title>
     <v-spacer />
     <v-btn text to="/landing">About</v-btn>
-    <v-btn text to="/login">Login</v-btn>
+    <v-btn v-if="!$store.getters.isAuthenticated" text to="/login">Login</v-btn>
+    <span v-else>
+      Welcome, {{$store.getters.user.first_name}}
+    </span>
   </v-app-bar>
 </template>
 
