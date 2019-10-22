@@ -20,16 +20,19 @@ export default new Vuex.Store({
 
     setUser(state, user) {
       state.user = user
+      localStorage.setItem('user', JSON.stringify(user))
     },
 
     setJwt(state, token) {
       state.jwt = token
+      localStorage.setItem('jwt', token)
       state.landed = true
     },
 
     logout(state) {
       state.user = {}
       state.jwt = ''
+      localStorage.clear()
     }
   },
   actions: {
