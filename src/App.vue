@@ -27,6 +27,7 @@
           activatable
           active-class="primary--text"
           class="white--text"
+          color="accent"
           :items="data"
           item-key="id"
           hoverable
