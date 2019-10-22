@@ -25,9 +25,18 @@ export default new Vuex.Store({
     setJwt(state, token) {
       state.jwt = token
       state.landed = true
+    },
+
+    logout(state) {
+      state.user = {}
+      state.jwt = ''
     }
   },
   actions: {
+
+    logout({commit}) {
+      commit('logout')
+    },
 
     async register({commit}, userData) {
       try {

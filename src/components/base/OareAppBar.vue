@@ -25,11 +25,19 @@
       </v-container>
     </v-toolbar-title>
     <v-spacer />
-    <v-btn text to="/landing">About</v-btn>
+    <v-btn text to="/landing" class="mr-2">About</v-btn>
     <v-btn v-if="!$store.getters.isAuthenticated" text to="/login">Login</v-btn>
-    <span v-else>
-      Welcome, {{$store.getters.user.first_name}}
-    </span>
+
+    <v-menu v-else offset-y>
+      <template v-slot:activator="{ on }">
+        <v-btn text v-on="on">Welcome, {{$store.getters.user.first_name}}</v-btn>
+      </template>
+      <v-list>
+        <v-list-item @click="logout">
+          <v-list-item-title>Logout</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </v-app-bar>
 </template>
 
@@ -41,6 +49,13 @@ export default {
         return "OARE";
       }
       return "Old Assyrian Research Environment";
+    }
+  },
+
+  methods: {
+    logout() {
+      this.$store.dispatch("logout");
+      this.$router.push("/login");
     }
   }
 };
