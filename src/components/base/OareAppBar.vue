@@ -26,6 +26,7 @@
     </v-toolbar-title>
     <v-spacer />
     <div v-if="$vuetify.breakpoint.smAndUp">
+      <v-btn text to="/admin">Admin</v-btn>
       <v-btn text to="/landing" class="mr-2">About</v-btn>
       <v-btn v-if="!$store.getters.isAuthenticated" text to="/login">Login</v-btn>
       <v-menu v-else offset-y>

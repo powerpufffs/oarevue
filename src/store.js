@@ -79,6 +79,10 @@ export default new Vuex.Store({
 
     user(state) {
       return state.user
+    },
+
+    jwt(state) {
+      return state.jwt;
     }
   }
 })

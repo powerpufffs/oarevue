@@ -6,6 +6,7 @@ import EpigraphyView from './components/EpigraphyView'
 import LoginView from './components/LoginView'
 import RegisterView from './components/RegisterView'
 import EditUserView from './components/EditUserView'
+import AdminView from './components/AdminView'
 
 Vue.use(Router)
 
@@ -16,6 +17,10 @@ export default new Router({
     {
       path: '/',
       component: Home
+    },
+    {
+      path: '/admin',
+      component: AdminView
     },
     {
       path: '/home',
