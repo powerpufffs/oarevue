@@ -26,7 +26,7 @@
     </v-toolbar-title>
     <v-spacer />
     <div v-if="$vuetify.breakpoint.smAndUp">
-      <v-btn text to="/admin">Admin</v-btn>
+      <v-btn v-if="$store.getters.user.is_admin" class="mr-2" text to="/admin">Admin</v-btn>
       <v-btn text to="/landing" class="mr-2">About</v-btn>
       <v-btn v-if="!$store.getters.isAuthenticated" text to="/login">Login</v-btn>
       <v-menu v-else offset-y>
@@ -49,6 +49,9 @@
       </template>
 
       <v-list>
+        <v-list-item @click="$router.push('/admin')" v-if="$store.getters.user.is_admin">
+          <v-list-item-title>Admin</v-list-item-title>
+        </v-list-item>
         <v-list-item @click="$router.push('/landing')">
           <v-list-item-title>About</v-list-item-title>
         </v-list-item>
