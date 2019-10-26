@@ -10,6 +10,7 @@
           outlined
         ></v-text-field>
         <v-text-field outlined v-model="user.lastname" :rules="rules.lastName" label="Last Name"></v-text-field>
+        <v-select outlined v-model="user.organization" :items="orgs" label="Organization" :rules="rules.organization"></v-select>
         <v-text-field outlined v-model="user.email" :rules="rules.email" label="Email"></v-text-field>
         <v-text-field
           outlined
@@ -50,11 +51,29 @@ export default {
         password: "",
         repeatpassword: "",
         firstname: "",
-        lastname: ""
+        lastname: "",
+        organization:""
       },
+      orgs: [
+        "Musée d’Art et d’Histoire",
+        "Musée du Louvre",
+        "København Universitat",
+        "British Museum",
+        "Ashmolean Museum",
+        "Yale University",
+        "University of Chicago, Oriental Institute",
+        "Adana Museum", 
+        "Anatolian Museum of Civilizations",
+        "Development Committee for OARE", 
+        "Brigham Young University",
+        "Neubauer Collegium for Culture and Society at the University of Chicago",
+        "Ankara University",
+        "Hacattepe University"
+      ],
       rules: {
         firstName: [v => !!v.trim() || "First name cannot be blank."],
         lastName: [v => !!v.trim() || "Last name cannot be blank."],
+        organization: [v => "" || "Organization cannot be blank."],
         email: [
           v => !!v.trim() || "Email cannot be blank.",
           v => /.+@.+\..+/.test(v) || "E-mail must be valid."

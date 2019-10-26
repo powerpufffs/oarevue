@@ -9,7 +9,7 @@
               <v-img src="img/BYU_abbrev.png" class="mt-5" max-height="50px" max-width="120px" />
             </a>
           </v-col>
-          <v-col cols="10" sm="9" offset-sm="1">
+          <v-col cols="12" sm="9" xl="12" lg="10">
             <v-row class="subtitle-1">
               <a
                 class="blue-grey--text text--lighten-3 no_underline"
