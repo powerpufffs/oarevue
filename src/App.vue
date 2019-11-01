@@ -172,13 +172,15 @@ export default {
      */
     setOnomasticonWords() {
       let onom = this.findCategoryByName("Onomasticon");
-      onom.children.forEach(letterChild => {
-        if (letterChild.hasOwnProperty("children")) {
-          letterChild.children.forEach(wordChild => {
-            wordChild.onomasticon = true;
-          });
-        }
-      });
+      if (onom && onom.children) {
+        onom.children.forEach(letterChild => {
+          if (letterChild.hasOwnProperty("children")) {
+            letterChild.children.forEach(wordChild => {
+              wordChild.onomasticon = true;
+            });
+          }
+        });
+      }
     },
 
     // Recursively build the children for a list of categories

@@ -1,10 +1,14 @@
 <template>
   <OareContentView title="Admin">
-    <v-data-table :headers="headers" :items="items" :loading="loading">
+    <!-- <v-data-table :headers="headers" :items="items" :loading="loading">
       <template v-slot:item.is_admin="{ item }">
         <v-switch :input-value="item.is_admin" @change="toggleAdmin(item.id, $event)" />
       </template>
-    </v-data-table>
+    </v-data-table> -->
+    <OareSubheader>Groups</OareSubheader>
+    <v-progress-linear v-if="loading" indeterminate />
+    <OareListItem v-else v-for="group in groups" :key="group.id">{{ group.name }}</OareListItem>
+
   </OareContentView>
 </template>
 
@@ -31,6 +35,7 @@ export default {
         }
       ],
       items: [],
+      groups: [],
       authenticated: false,
       loading: true,
       dialog: false
@@ -46,16 +51,14 @@ export default {
   },
 
   mounted() {
-    axios
-      .get(`${Constants.API_PATH}/get_users`, {
-        headers: {
-          Authorization: this.auth
-        }
-      })
-      .then(response => {
-        this.items = response.data;
-        this.loading = false;
-      });
+    this.$axios.get('/group', {
+      headers: {
+        Authorization: this.auth
+      }
+    }).then(({ data}) => {
+      this.groups = data
+      this.loading = false
+    })
   },
 
   methods: {

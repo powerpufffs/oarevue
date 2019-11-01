@@ -11,6 +11,7 @@
 export default {
   name: "home",
   beforeRouteEnter(to, from, next) {
+    console.log('trying to enter home route')
     next(vm => {
       if (!vm.$store.getters.landed) {
         vm.$store.commit('setLanded')
