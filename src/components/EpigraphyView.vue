@@ -1,11 +1,11 @@
 <template>
   <OareContentView :title="textName">
-    <v-progress-circular v-if="loading" indeterminate />
+    <v-progress-linear v-if="loading" indeterminate />
 
     <v-container v-else>
       <v-row>
         <v-col cols="12" md="6">
-          <OareSubheader>Epigraphies</OareSubheader>
+          <OareSubheader>Transliteration</OareSubheader>
           <div v-for="(side, index) in sortedSides" :key="side">
             <OareSubheader :class="{'mt-4': index === 0 ? false : true }">{{ sideText(side) }}</OareSubheader>
             <OareListItem v-for="lineNum in sortedLineNums(side)" :key="lineNum">
@@ -15,7 +15,7 @@
           </div>
         </v-col>
         <v-col cols="12" md="6">
-          <OareSubheader>Discourse Units</OareSubheader>
+          <OareSubheader>Bound transcription</OareSubheader>
           <v-treeview class="title font-weight-regular" :items="discourses">
             <template v-slot:label="{ item }">{{ item.name }}</template>
           </v-treeview>
@@ -26,8 +26,6 @@
 </template>
 
 <script>
-import axios from "axios";
-import Constants from "../constants";
 const LOGOGRAM = 2;
 const PHONOGRAM = 1;
 const SPECIAL_PHONOGRAM = 0;
@@ -112,13 +110,13 @@ export default {
     markupChars() {
       let chars = [];
       for (const key in MARKUP_BRACKETS) {
-        const val = MARKUP_BRACKETS[key]
+        const val = MARKUP_BRACKETS[key];
         chars.push(val[0]);
         chars.push(val[1]);
       }
 
       for (const key in MARKUP_CHARACTERS) {
-        const val = MARKUP_CHARACTERS[key]
+        const val = MARKUP_CHARACTERS[key];
         chars.push(val.reading);
       }
       return chars;
@@ -149,12 +147,11 @@ export default {
      */
     async getEpigraphyInfo() {
       this.loading = true;
-      let epigraphies = (await axios.get(
-        `${Constants.API_PATH}/textEpigraphies/${this.textId}`
+      let epigraphies = (await this.$axios.get(
+        `/textEpigraphies/${this.textId}`
       )).data;
-      let discourses = (await axios.get(
-        `${Constants.API_PATH}/discourseUnits/${this.textId}`
-      )).data;
+      let discourses = (await this.$axios.get(`/discourseUnits/${this.textId}`))
+        .data;
       this.loading = false;
       this.formatEpigraphies(epigraphies, discourses);
     },
@@ -505,129 +502,6 @@ export default {
         words.push(wordReading.join(""));
       }
       return words.join(" ");
-
-      // for (let k = 0; k < line.length; k++) {
-      //   let word = line[k];
-      //   let wordReading = "";
-
-      //   for (let i = 0; i < word.length; i++) {
-      //     let char = word[i];
-
-      //     // Apply markup if it has it
-      //     if (char.markups) {
-      //       for (let j = 0; j < char.markups.length; j++) {
-      //         let markup = char.markups[j];
-      //         // If it's a bracket, insert the bracket into the appropriate place,
-      //         // may be in a following or previous character
-      //         if (markup.markup in MARKUP_BRACKETS) {
-      //           let bracket1 = MARKUP_BRACKETS[markup.markup][0];
-      //           let bracket2 = MARKUP_BRACKETS[markup.markup][1];
-
-      //           let startPos = markup.start_char;
-      //           let endPos = markup.end_char;
-      //           let addedStartChar = false;
-
-      //           // May be a continuation from previous char or word
-      //           if (startPos === 0) {
-      //             // If it's not a continuation, insert the bracket
-      //             // at the beginning of the character
-      //             if (
-      //               i === 0 ||
-      //               !word[i - 1].markups ||
-      //               word[i - 1].markups[0].markup !== markup.markup
-      //             ) {
-      //               if (char.line === "33") {
-      //                 debugger;
-      //               }
-
-      //               if (
-      //                 i === 0 &&
-      //                 !(
-      //                   k > 0 &&
-      //                   line[k - 1][line[k - 1].length - 1].markups &&
-      //                   line[k - 1][line[k - 1].length - 1].markups[0]
-      //                     .markup === markup.markup
-      //                 )
-      //               ) {
-      //                 char.reading = bracket1 + char.reading;
-      //                 addedStartChar = true;
-      //               }
-      //             }
-      //           }
-
-      //           // Insert bracket at normal position
-      //           else {
-      //             char.reading = this.insertBracket(
-      //               char.reading,
-      //               bracket1,
-      //               startPos
-      //             );
-      //             addedStartChar = true;
-      //           }
-
-      //           // May be a continuation of the previous character
-      //           if (endPos === 0) {
-      //             // Check that next char or word doesn't have the same character
-      //             if (
-      //               i === word.length - 1 ||
-      //               !word[i + 1].markups ||
-      //               !word[i + 1].markups.some(
-      //                 markupItem => markupItem.markup === markup.markup
-      //               )
-      //             ) {
-      //               char.reading = char.reading + bracket2;
-      //             }
-      //           }
-
-      //           // Insert bracket at the normal ending position
-      //           else {
-      //             if (addedStartChar) {
-      //               endPos++;
-      //             }
-      //             char.reading = this.insertBracket(
-      //               char.reading,
-      //               bracket2,
-      //               endPos
-      //             );
-      //           }
-      //         }
-
-      //         // If it's a single bracket, just put insert it into the reading
-      //         if (markup.markup in MARKUP_CHARACTERS) {
-      //           let markupChar = MARKUP_CHARACTERS[markup.markup];
-      //           if (markupChar.position === 1) {
-      //             char.reading += markupChar.reading;
-      //           } else if (markupChar.position === -1) {
-      //             char.reading = markupChar.reading + char.reading;
-      //           }
-      //         }
-      //       }
-      //     }
-
-      //     if (char.type === PHONOGRAM) {
-      //       char.reading = this.italicizePhonogram(char.reading);
-      //     }
-      //     char.reading = this.superscriptMarkups(char.reading);
-      //     wordReading += char.reading;
-      //     // Join two logograms with periods
-
-      //     if (i !== word.length - 1) {
-      //       if (char.type === LOGOGRAM && word[i + 1].type === LOGOGRAM) {
-      //         if (char.numberVal && word[i + 1].numberVal) {
-      //           wordReading += "+";
-      //         } else {
-      //           wordReading += ".";
-      //         }
-      //       } else {
-      //         wordReading += "-";
-      //       }
-      //     }
-      //   }
-      //   // Add the last character
-      //   // wordReading += this.formattedReading(word[word.length - 1]);
-      //   words.push(wordReading);
-      // }
-      // return words.join(" ");
     },
 
     /**

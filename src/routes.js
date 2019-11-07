@@ -5,6 +5,7 @@ import LoginView from './components/LoginView'
 import RegisterView from './components/RegisterView'
 import EditUserView from './components/EditUserView'
 import AdminView from './components/AdminView'
+import GroupView from './components/GroupView'
 
 export default [
   {
@@ -13,6 +14,7 @@ export default [
   },
   {
     path: '/admin',
+    name: 'admin',
     component: AdminView
   },
   {
@@ -30,6 +32,12 @@ export default [
     path: '/epigraphies/:textName/:textId',
     name: 'epigraphies',
     component: EpigraphyView,
+    props: true
+  },
+  {
+    path: '/groups/:groupId',
+    name: 'groups',
+    component: GroupView,
     props: true
   },
   {

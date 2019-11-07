@@ -19,6 +19,7 @@
           type="password"
         ></v-text-field>
         <v-text-field
+          @keyup.enter="register"
           outlined
           v-model="user.repeatpassword"
           :rules="rules.repeatPassword"

@@ -1,13 +1,12 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { isValidJwt } from './utils/index'
-import Constants from './constants'
-import axios from 'axios'
 import { EventBus } from './utils/index'
+import axiosInstance from './axiosInstance'
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+let store = new Vuex.Store({
   state: {
     landed: false,
     user: {},
@@ -26,6 +25,7 @@ export default new Vuex.Store({
     setJwt(state, token) {
       state.jwt = token
       localStorage.setItem('jwt', token)
+      axiosInstance.defaults.headers.common['Authorization'] = `Bearer: ${token}`
       state.landed = true
     },
 
@@ -43,8 +43,7 @@ export default new Vuex.Store({
 
     async register({commit}, userData) {
       try {
-        let response = await axios.post(`${Constants.API_PATH}/register`, userData)
-        let data = response.data
+        let { data } = await Vue.prototype.$axios.post('/register', userData)
         commit('setUser', data.data)
         commit('setJwt', data.token)
         return true
@@ -56,7 +55,7 @@ export default new Vuex.Store({
 
     async login({commit}, userData) {
       try {
-        let response = await axios.post(`${Constants.API_PATH}/login`, userData)
+        let response = await Vue.prototype.$axios.post('/login', userData)
         let data = response.data
         commit('setUser', data.data)
         commit('setJwt', data.token)
@@ -86,3 +85,11 @@ export default new Vuex.Store({
     }
   }
 })
+
+const jwt = localStorage.getItem("jwt");
+const user = JSON.parse(localStorage.getItem("user"));
+if (jwt && isValidJwt(jwt) && user) {
+  store.commit("setJwt", jwt);
+  store.commit("setUser", user);
+}
+export default store;

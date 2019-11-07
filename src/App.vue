@@ -49,10 +49,8 @@
 </template>
 
 <script>
-import axios from "axios";
-import Constants from "./constants";
 import LandingPage from "./components/LandingPage";
-import { isValidJwt } from "./utils/index";
+// import { isValidJwt } from "./utils/index";
 
 export default {
   name: "app",
@@ -70,12 +68,31 @@ export default {
     };
   },
   mounted() {
-    const jwt = localStorage.getItem("jwt");
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (jwt && isValidJwt(jwt) && user) {
-      this.$store.commit("setJwt", jwt);
-      this.$store.commit("setUser", user);
-    }
+    // const jwt = localStorage.getItem("jwt");
+    // const user = JSON.parse(localStorage.getItem("user"));
+    // if (jwt && isValidJwt(jwt) && user) {
+    //   this.$store.commit("setJwt", jwt);
+    //   this.$store.commit("setUser", user);
+    // }
+    // const adminRoutes = ["admin", "groups"];
+    // this.$router.beforeEach((to, from, next) => {
+    //   debugger;
+    //   if (adminRoutes.includes(to.name)) {
+    //     if (!this.$store.getters.is_admin) {
+    //       next(false);
+    //     } else {
+    //       next();
+    //     }
+    //     // next(vm => {
+    //     //   debugger
+    //     //   if (!vm.$store.getters.user.is_admin) {
+    //     //     vm.$router.replace("/");
+    //     //   }
+    //     // });
+    //   } else {
+    //     next();
+    //   }
+    // });
   },
   computed: {
     selected() {
@@ -113,9 +130,7 @@ export default {
   async created() {
     try {
       this.sidebarLoading = true;
-      let { data } = await axios.get(
-        `${Constants.API_PATH}/hierarchyCategories`
-      );
+      let { data } = await this.$axios.get("/hierarchyCategories");
       this.formatCategories(data);
       this.sidebarLoading = false;
       this.setOnomasticonWords();

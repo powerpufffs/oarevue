@@ -21,7 +21,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import Constants from "../constants";
 
 export default {
@@ -53,8 +52,8 @@ export default {
     },
     async getWordInfo() {
       this.loading = true;
-      let result = await axios.get(
-        `${Constants.API_PATH}/dictionaryWords/${this.wordId}`
+      let result = await this.$axios.get(
+        `/dictionaryWords/${this.wordId}`
       );
       this.loading = false;
       let data = result.data;
