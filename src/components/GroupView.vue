@@ -4,12 +4,18 @@
     <template v-slot:header>
       <router-link to="/admin">&larr; Back to admin view</router-link>
     </template>
-    <OareSubheader>Users</OareSubheader>
-    <OareListItem v-for="user in groupUsers" :key="user.id">{{user.name}}</OareListItem>
+    <OareSubheader>Members of {{groupName}}</OareSubheader>
+    <OareListItem v-for="user in groupUsers" :key="user.id">
+      {{user.name}}
+      <v-btn text icon small @click="deleteUserDialog=true; deleteUser=user">
+        <v-icon>mdi-delete</v-icon>
+      </v-btn>
+    </OareListItem>
 
+    <!-- Dialog for adding a new user to the group -->
     <v-dialog v-model="addUserDialog" width="500">
       <template v-slot:activator="{on}">
-        <v-btn color="primary" v-on="on">
+        <v-btn class="mt-4" color="primary" v-on="on">
           <v-icon>mdi-plus</v-icon>Add users
         </v-btn>
       </template>
@@ -30,6 +36,19 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!-- Dialog for removing a user from the group -->
+    <v-dialog v-model="deleteUserDialog" width="500">
+      <v-card>
+        <v-card-title>Confirm delete</v-card-title>
+        <v-card-text>Are you sure you want to remove from this group?</v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn text color="error">No, don't delete</v-btn>
+          <v-btn color="primary">Yes, delete</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </OareContentView>
 </template>
 
@@ -47,7 +66,9 @@ export default {
       allUsers: [],
       userChecked: {}, // Maps user id to if they are checked
       loading: true,
-      addUserDialog: false
+      addUserDialog: false,
+      deleteUserDialog: false,
+      deleteUser: null
     };
   },
 
@@ -97,6 +118,14 @@ export default {
     });
 
     this.loading = false;
+  },
+
+  watch: {
+    deleteUserDialog(open) {
+      if (!open) {
+        this.deleteUser = null;
+      }
+    }
   }
 };
 </script>
