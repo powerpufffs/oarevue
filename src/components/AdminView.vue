@@ -47,17 +47,10 @@
           <v-spacer />
           <v-btn text @click="addDialog=false" color="error">Cancel</v-btn>
           <v-btn color="primary" @click="submitGroup">
-            <v-progress-circular v-if="addGroupLoading" indeterminate size="25" width="3" />
+            <OareButtonSpinner v-if="addGroupLoading" />
             <span v-else>Submit</span>
           </v-btn>
         </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <!-- Dialog for editing a group name -->
-    <v-dialog v-model="editDialog" width="500">
-      <v-card>
-        <v-card-title>Edit Group</v-card-title>
       </v-card>
     </v-dialog>
 
@@ -101,7 +94,6 @@ export default {
       loading: true,
       addDialog: false,
       confirmDeleteDialog: false,
-      editDialog: false,
       groupName: "",
       deleteGroupId: null,
       addGroupLoading: false,

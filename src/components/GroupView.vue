@@ -32,7 +32,11 @@
         <v-divider />
         <v-card-actions>
           <v-spacer />
-          <v-btn @click="addUsers" color="primary">Add</v-btn>
+          <v-btn @click="addUserDialog=false" color="error" text>Cancel</v-btn>
+          <v-btn @click="addUsers" color="primary">
+            <OareButtonSpinner v-if="addUsersLoading" />
+            <span v-else>Add</span>
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -41,11 +45,18 @@
     <v-dialog v-model="deleteUserDialog" width="500">
       <v-card>
         <v-card-title>Confirm delete</v-card-title>
-        <v-card-text>Are you sure you want to remove from this group?</v-card-text>
+        <v-card-text>
+          Are you sure you want to remove
+          {{ !!deleteUser ? deleteUser.name : ""}}
+          from this group?
+        </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn text color="error">No, don't delete</v-btn>
-          <v-btn color="primary">Yes, delete</v-btn>
+          <v-btn text color="error" @click="deleteUserDialog=false">No, don't delete</v-btn>
+          <v-btn color="primary" @click="deleteUserGroup">
+            <OareButtonSpinner v-if="deleteUserLoading" />
+            <span v-else>Yes, delete</span>
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -67,8 +78,10 @@ export default {
       userChecked: {}, // Maps user id to if they are checked
       loading: true,
       addUserDialog: false,
+      addUsersLoading: false,
       deleteUserDialog: false,
-      deleteUser: null
+      deleteUser: null,
+      deleteUserLoading: false
     };
   },
 
@@ -92,6 +105,7 @@ export default {
 
   methods: {
     async addUsers() {
+      this.addUsersLoading = true;
       let postForm = {
         group_id: Number(this.groupId),
         users: []
@@ -101,8 +115,19 @@ export default {
       });
 
       let { data } = await this.$axios.post("/user_group", postForm);
+      this.addUsersLoading = false;
       this.groupUsers = data.users;
       this.addUserDialog = false;
+    },
+
+    async deleteUserGroup() {
+      this.deleteUserLoading = true;
+      let { data } = await this.$axios.delete(
+        `/user_group?user_id=${this.deleteUser.user_id}&group_id=${this.groupId}`
+      );
+      this.deleteUserLoading = false;
+      this.deleteUserDialog = false;
+      this.groupUsers = data;
     }
   },
 
@@ -121,6 +146,13 @@ export default {
   },
 
   watch: {
+    addUserDialog(open) {
+      if (!open) {
+        for (let id in this.userChecked) {
+          this.$set(this.userChecked, id, false);
+        }
+      }
+    },
     deleteUserDialog(open) {
       if (!open) {
         this.deleteUser = null;
