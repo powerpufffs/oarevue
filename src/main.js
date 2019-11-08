@@ -12,9 +12,6 @@ import axiosInstance from './axiosInstance'
 
 loadBases()
 
-// const axiosInstance = axios.create({
-//   baseURL: Constants.API_PATH
-// })
 
 Vue.use(Vuetify)
 Vue.config.productionTip = false

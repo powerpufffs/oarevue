@@ -114,10 +114,14 @@ export default {
         postForm.users.push(Number(user.id));
       });
 
-      let { data } = await this.$axios.post("/user_group", postForm);
-      this.addUsersLoading = false;
-      this.groupUsers = data.users;
-      this.addUserDialog = false;
+      try {
+        let { data } = await this.$axios.post("/user_group", postForm);
+        this.groupUsers = data.users;
+        this.addUserDialog = false;
+      } catch (err) {
+      } finally {
+        this.addUsersLoading = false;
+      }
     },
 
     async deleteUserGroup() {
