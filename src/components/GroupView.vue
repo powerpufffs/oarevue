@@ -60,6 +60,70 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <OareSubheader class="mt-6">Text Permissions</OareSubheader>
+    <v-dialog v-model="addTextDialog" width="500">
+      <template v-slot:activator="{ on }">
+        <v-btn color="primary" class="mt-2 mr-3" v-on="on">
+          <v-icon>mdi-plus</v-icon>Add Text
+        </v-btn>
+      </template>
+      <v-card>
+        <v-card-title>Add Text</v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="4">
+                <strong>Text Name</strong>
+              </v-col>
+              <v-col cols="4">
+                <strong>Can edit?</strong>
+              </v-col>
+            </v-row>
+            <v-row v-for="text in allTexts" :key="text.text_id" align-content="center">
+              <v-col cols="4">
+                <v-checkbox
+                  class="pa-0"
+                  v-model="textChecked[text.text_id]"
+                  :label="text.alias_name"
+                />
+              </v-col>
+              <v-col cols="4">
+                <v-checkbox class="pa-0" v-model="editTexts[text.text_id]" />
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-divider />
+        <v-card-actions>
+          <v-spacer />
+          <v-btn text color="error">Cancel</v-btn>
+          <v-btn color="primary" @click="addTextPerms">Save</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog width="500">
+      <template v-slot:activator="{ on }">
+        <v-btn
+          color="error"
+          v-on="on"
+          class="mt-2"
+          :disabled="selectedPermRows.length < 1"
+        >Remove selected permissions</v-btn>
+      </template>
+    </v-dialog>
+    <v-data-table
+      :headers="permsHeaders"
+      :items="groupPerms"
+      disable-sort
+      show-select
+      v-model="selectedPermRows"
+      item-key="text_id"
+      class="mt-3"
+    >
+      <template v-slot:item.can_write="{ item }">{{item.can_write ? 'Yes': 'No'}}</template>
+    </v-data-table>
   </OareContentView>
 </template>
 
@@ -75,13 +139,23 @@ export default {
       groupName: "",
       groupUsers: [],
       allUsers: [],
+      allTexts: [],
       userChecked: {}, // Maps user id to if they are checked
+      textChecked: {}, //Maps text id to if it is checked
+      editTexts: {}, //Maps text id to if it has write permission
+      groupPerms: [], // List of text permissions
       loading: true,
       addUserDialog: false,
+      addTextDialog: false,
       addUsersLoading: false,
       deleteUserDialog: false,
       deleteUser: null,
-      deleteUserLoading: false
+      deleteUserLoading: false,
+      permsHeaders: [
+        { text: "Text Name", value: "alias_name" },
+        { text: "Can edit?", value: "can_write" }
+      ],
+      selectedPermRows: []
     };
   },
 
@@ -124,6 +198,22 @@ export default {
       }
     },
 
+    async addTextPerms() {
+      let addTexts = this.allTexts
+        .filter(text => this.textChecked[text.text_id])
+        .map(text => {
+          return {
+            text_id: text.text_id,
+            can_write: this.editTexts[text.text_id]
+          };
+        });
+      let { data: texts } = await this.$axios.post("/group_rw", {
+        group_id: Number(this.groupId),
+        texts: addTexts
+      });
+      console.log(texts);
+    },
+
     async deleteUserGroup() {
       this.deleteUserLoading = true;
       let { data } = await this.$axios.delete(
@@ -146,6 +236,18 @@ export default {
       this.$set(this.userChecked, user.id, false);
     });
 
+    let { data: texts } = await this.$axios.get("/text_text");
+    this.allTexts = texts;
+    this.allTexts.forEach(text => {
+      this.$set(this.textChecked, text.text_id, false);
+      this.$set(this.editTexts, text.text_id, false);
+    });
+
+    let { data: groupPerms } = await this.$axios.get(
+      `/group_rw/${this.groupId}`
+    );
+    this.groupPerms = groupPerms.permissions;
+
     this.loading = false;
   },
 
@@ -155,6 +257,14 @@ export default {
         for (let id in this.userChecked) {
           this.$set(this.userChecked, id, false);
         }
+      }
+    },
+    addTextDialog(open) {
+      if (!open) {
+        this.allTexts.forEach(text => {
+          this.$set(this.textChecked, text.text_id, false);
+          this.$set(this.editTexts, text.text_id, false);
+        });
       }
     },
     deleteUserDialog(open) {
