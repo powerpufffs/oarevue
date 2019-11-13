@@ -1,12 +1,14 @@
 <template>
   <OareContentView title="Admin">
     <OareSubheader>Groups</OareSubheader>
-    <v-progress-linear v-if="loading" indeterminate />
-    <v-container v-else>
+
+    <!-- <v-container v-else>
       <v-row v-for="group in groups" :key="group.id">
         <v-col cols="2">
           <OareListItem>
-            <router-link :to="`/groups/${group.id}`">{{ group.name }}</router-link>
+            <router-link :to="`/groups/${group.id}`">{{
+              group.name
+            }}</router-link>
           </OareListItem>
         </v-col>
         <v-col cols="2">
@@ -18,7 +20,10 @@
                 icon
                 small
                 v-on="on"
-                @click="deleteGroupId=group.id; confirmDeleteDialog=true"
+                @click="
+                  deleteGroupId = group.id;
+                  confirmDeleteDialog = true;
+                "
               >
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
@@ -27,7 +32,7 @@
           </v-tooltip>
         </v-col>
       </v-row>
-    </v-container>
+    </v-container> -->
 
     <!-- Dialog for adding a new group -->
     <v-dialog v-model="addDialog" width="500">
@@ -39,13 +44,18 @@
       <v-card class="pa-3">
         <v-card-title primary-title>Add Group</v-card-title>
         <v-card-text>
-          <v-text-field v-model="groupName" @keyup.enter="submitGroup" outlined label="Group Name" />
-          <p class="subtitle error--text">{{addGroupErrorMsg}}</p>
+          <v-text-field
+            v-model="groupName"
+            @keyup.enter="submitGroup"
+            outlined
+            label="Group Name"
+          />
+          <p class="subtitle error--text">{{ addGroupErrorMsg }}</p>
         </v-card-text>
         <v-divider />
         <v-card-actions>
           <v-spacer />
-          <v-btn text @click="addDialog=false" color="error">Cancel</v-btn>
+          <v-btn text @click="addDialog = false" color="error">Cancel</v-btn>
           <v-btn color="primary" @click="submitGroup">
             <OareButtonSpinner v-if="addGroupLoading" />
             <span v-else>Submit</span>
@@ -54,16 +64,60 @@
       </v-card>
     </v-dialog>
 
+    <v-menu>
+      <template v-slot:activator="{ on }">
+        <v-btn
+          v-on="on"
+          color="info"
+          class="ml-3"
+          :disabled="selectedGroups.length < 1"
+          >Actions</v-btn
+        >
+      </template>
+      <v-list>
+        <v-list-item @click="confirmDeleteDialog = true">
+          <v-list-item-title>Delete group</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+
+    <v-data-table
+      :headers="headers"
+      :items="groups"
+      show-select
+      disable-sort
+      item-key="id"
+      v-model="selectedGroups"
+      :loading="loading"
+      class="mt-3"
+    >
+      <template v-slot:item.name="{ item }">
+        <router-link :to="`/groups/${item.id}`">{{ item.name }}</router-link>
+      </template>
+    </v-data-table>
+
     <v-dialog v-model="confirmDeleteDialog" width="500">
       <v-card>
         <v-card-title>Confirm Delete</v-card-title>
-        <v-card-text
-          class="subtitle-1"
-        >Are you sure you want to delete this group? This action cannot be undone.</v-card-text>
+        <v-card-text class="subtitle-1"
+          >All users and permissions will be removed from the following groups.
+          Are you sure you want to delete these groups?
+          <ul>
+            <li v-for="group in selectedGroups" :key="group.id">
+              {{ group.name }}
+            </li>
+          </ul>
+        </v-card-text>
+        <v-divider />
         <v-card-actions>
           <v-spacer />
-          <v-btn @click="confirmDeleteDialog=false" text color="error">No, don't delete</v-btn>
-          <v-btn @click="confirmDeleteDialog=false; deleteGroup()" color="primary">Yes, delete</v-btn>
+          <v-btn @click="confirmDeleteDialog = false" text color="error"
+            >No, don't delete</v-btn
+          >
+          <v-btn @click="deleteGroups" color="primary">
+            <OareButtonSpinner v-if="deleteGroupLoading" />
+            <span v-else>Yes, delete</span>
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -76,29 +130,24 @@ export default {
     return {
       headers: [
         {
-          text: "Name",
+          text: "Group Name",
           value: "name"
         },
         {
-          text: "Email",
-          value: "email"
-        },
-        {
-          text: "Admin?",
-          value: "is_admin"
+          text: "Users",
+          value: "num_users"
         }
       ],
-      items: [],
       groups: [],
+      selectedGroups: [],
       authenticated: false,
       loading: true,
       addDialog: false,
       confirmDeleteDialog: false,
       groupName: "",
-      deleteGroupId: null,
       addGroupLoading: false,
       addGroupErrorMsg: "",
-      groupsDeleted: {} // Maps a group ID to if it's being deleted
+      deleteGroupLoading: false
     };
   },
 
@@ -122,17 +171,22 @@ export default {
       }
     },
 
-    async deleteGroup() {
+    async deleteGroups() {
       try {
-        this.$set(this.groupsDeleted, this.deleteGroupId, true);
-        await this.$axios.delete(`/group/${this.deleteGroupId}`);
-        this.groups = this.groups.filter(
-          item => item.id !== this.deleteGroupId
-        );
-        this.$set(this.groupsDeleted, this.deleteGroupId, false);
+        this.deleteGroupLoading = true;
+        let delGroupIds = this.selectedGroups.map(item => item.id);
+
+        let { data: newGroups } = await this.$axios.put("/group", {
+          group_ids: delGroupIds
+        });
+
+        this.groups = newGroups;
+        this.selectedGroups = [];
       } catch (err) {
-        this.$set(this.groupsDeleted, this.deleteGroupId, false);
         console.error(err);
+      } finally {
+        this.confirmDeleteDialog = false;
+        this.deleteGroupLoading = false;
       }
     }
   },
@@ -150,19 +204,9 @@ export default {
         this.addGroupErrorMsg = "";
         this.deleteGroupId = null;
       }
-    },
-
-    groups: {
-      handler(newGroups) {
-        newGroups.forEach(group => {
-          this.$set(this.groupsDeleted, group.id, false);
-        });
-      },
-      deep: true
     }
   }
 };
 </script>
 
-<style>
-</style>
+<style></style>

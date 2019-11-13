@@ -4,17 +4,25 @@
     <template v-slot:header>
       <router-link to="/admin">&larr; Back to admin view</router-link>
     </template>
-    <OareSubheader>Members of {{groupName}}</OareSubheader>
+    <OareSubheader>Members of {{ groupName }}</OareSubheader>
     <OareListItem v-for="user in groupUsers" :key="user.id">
-      {{user.name}}
-      <v-btn text icon small @click="deleteUserDialog=true; deleteUser=user">
+      {{ user.name }}
+      <v-btn
+        text
+        icon
+        small
+        @click="
+          deleteUserDialog = true;
+          deleteUser = user;
+        "
+      >
         <v-icon>mdi-delete</v-icon>
       </v-btn>
     </OareListItem>
 
     <!-- Dialog for adding a new user to the group -->
     <v-dialog v-model="addUserDialog" width="500">
-      <template v-slot:activator="{on}">
+      <template v-slot:activator="{ on }">
         <v-btn class="mt-4" color="primary" v-on="on">
           <v-icon>mdi-plus</v-icon>Add users
         </v-btn>
@@ -32,7 +40,9 @@
         <v-divider />
         <v-card-actions>
           <v-spacer />
-          <v-btn @click="addUserDialog=false" color="error" text>Cancel</v-btn>
+          <v-btn @click="addUserDialog = false" color="error" text
+            >Cancel</v-btn
+          >
           <v-btn @click="addUsers" color="primary">
             <OareButtonSpinner v-if="addUsersLoading" />
             <span v-else>Add</span>
@@ -47,12 +57,14 @@
         <v-card-title>Confirm delete</v-card-title>
         <v-card-text>
           Are you sure you want to remove
-          {{ !!deleteUser ? deleteUser.name : ""}}
+          {{ !!deleteUser ? deleteUser.name : "" }}
           from this group?
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn text color="error" @click="deleteUserDialog=false">No, don't delete</v-btn>
+          <v-btn text color="error" @click="deleteUserDialog = false"
+            >No, don't delete</v-btn
+          >
           <v-btn color="primary" @click="deleteUserGroup">
             <OareButtonSpinner v-if="deleteUserLoading" />
             <span v-else>Yes, delete</span>
@@ -80,7 +92,11 @@
                 <strong>Can edit?</strong>
               </v-col>
             </v-row>
-            <v-row v-for="text in allTexts" :key="text.text_id" align-content="center">
+            <v-row
+              v-for="text in filteredTexts"
+              :key="text.text_id"
+              align-content="center"
+            >
               <v-col cols="4">
                 <v-checkbox
                   class="pa-0"
@@ -97,8 +113,13 @@
         <v-divider />
         <v-card-actions>
           <v-spacer />
-          <v-btn text color="error">Cancel</v-btn>
-          <v-btn color="primary" @click="addTextPerms">Save</v-btn>
+          <v-btn text color="error" @click="addTextDialog = false"
+            >Cancel</v-btn
+          >
+          <v-btn color="primary" @click="addTextPerms">
+            <OareButtonSpinner v-if="addTextLoading" />
+            <span v-else>Save</span>
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -110,7 +131,8 @@
           v-on="on"
           class="mt-2"
           :disabled="selectedPermRows.length < 1"
-        >Remove selected permissions</v-btn>
+          >Remove selected permissions</v-btn
+        >
       </template>
     </v-dialog>
     <v-data-table
@@ -122,7 +144,9 @@
       item-key="text_id"
       class="mt-3"
     >
-      <template v-slot:item.can_write="{ item }">{{item.can_write ? 'Yes': 'No'}}</template>
+      <template v-slot:item.can_write="{ item }">{{
+        item.can_write ? "Yes" : "No"
+      }}</template>
     </v-data-table>
   </OareContentView>
 </template>
@@ -151,6 +175,7 @@ export default {
       deleteUserDialog: false,
       deleteUser: null,
       deleteUserLoading: false,
+      addTextLoading: false,
       permsHeaders: [
         { text: "Text Name", value: "alias_name" },
         { text: "Can edit?", value: "can_write" }
@@ -163,6 +188,14 @@ export default {
     filteredUsers() {
       let userIds = this.groupUsers.map(item => item.user_id);
       return this.allUsers.filter(item => !userIds.includes(item.id));
+    },
+
+    filteredTexts() {
+      let groupTextIds = this.groupPerms.map(item => item.text_id);
+
+      return this.allTexts.filter(item => {
+        return !groupTextIds.includes(item.text_id);
+      });
     },
 
     checkedUsers() {
@@ -199,6 +232,7 @@ export default {
     },
 
     async addTextPerms() {
+      this.addTextLoading = true;
       let addTexts = this.allTexts
         .filter(text => this.textChecked[text.text_id])
         .map(text => {
@@ -211,7 +245,9 @@ export default {
         group_id: Number(this.groupId),
         texts: addTexts
       });
-      console.log(texts);
+      this.groupPerms = texts.permissions;
+      this.addTextDialog = false;
+      this.addTextLoading = false;
     },
 
     async deleteUserGroup() {
@@ -276,5 +312,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>
