@@ -124,7 +124,7 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog width="500">
+    <v-dialog width="500" v-model="dialogs.removePermissions">
       <template v-slot:activator="{ on }">
         <v-btn
           color="error"
@@ -134,6 +134,32 @@
           >Remove selected permissions</v-btn
         >
       </template>
+      <v-card>
+        <v-card-title>Remove permissions</v-card-title>
+        <v-card-text>
+          Are you sure you want to delete these permissions? Members of this
+          group will no longer have read or write access to the following texts:
+          <ul>
+            <li v-for="perm in selectedPermRows" :key="perm.text_id">
+              {{ perm.alias_name }}
+            </li>
+          </ul>
+        </v-card-text>
+        <v-divider />
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="error"
+            text
+            @click="$set(dialogs, 'removePermissions', false)"
+            >No, don't delete</v-btn
+          >
+          <v-btn color="primary" @click="deleteTextPerms">
+            <OareButtonSpinner v-if="loadings.deleteTextPerms" />
+            <span v-else>Yes, delete</span>
+          </v-btn>
+        </v-card-actions>
+      </v-card>
     </v-dialog>
     <v-data-table
       :headers="permsHeaders"
@@ -180,7 +206,13 @@ export default {
         { text: "Text Name", value: "alias_name" },
         { text: "Can edit?", value: "can_write" }
       ],
-      selectedPermRows: []
+      selectedPermRows: [],
+      dialogs: {
+        removePermissions: false
+      },
+      loadings: {
+        deleteTextPerms: false
+      }
     };
   },
 
@@ -229,6 +261,16 @@ export default {
       } finally {
         this.addUsersLoading = false;
       }
+    },
+
+    async deleteTextPerms() {
+      this.$set(this.loadings, "deleteTextPerms", true);
+      let { data: texts } = await this.$axios.put(`/group_rw/${this.groupId}`, {
+        texts: this.selectedPermRows.map(item => item.text_id)
+      });
+      this.$set(this.loadings, "deleteTextPerms", false);
+      this.$set(this.dialogs, "removePermissions", false);
+      this.groupPerms = texts;
     },
 
     async addTextPerms() {
