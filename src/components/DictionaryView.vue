@@ -4,10 +4,9 @@
     <div v-else>
       <div class="flex justify-start items-baseline mt-5 pl-2">
         <OareSubheader>{{ definitionSubheader }}</OareSubheader>
-        <OareListItem
-          v-for="(definition, index) in definitions"
-          :key="index"
-        >{{ definition.definition }}</OareListItem>
+        <OareListItem v-for="(definition, index) in definitions" :key="index">{{
+          definition.definition
+        }}</OareListItem>
       </div>
       <div class="flex flex-row justify-start items-baseline mt-4 pl-2">
         <OareSubheader>Forms</OareSubheader>
@@ -52,9 +51,7 @@ export default {
     },
     async getWordInfo() {
       this.loading = true;
-      let result = await this.$axios.get(
-        `/dictionaryWords/${this.wordId}`
-      );
+      let result = await this.$axios.get(`/dictionary_words/${this.wordId}`);
       this.loading = false;
       let data = result.data;
       this.word = data.word;

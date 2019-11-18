@@ -308,7 +308,7 @@ export default {
     this.groupName = response.data.name;
     this.groupUsers = response.data.users;
 
-    response = await this.$axios.get("/get_users");
+    response = await this.$axios.get("/users");
     this.allUsers = response.data;
     this.allUsers.forEach(user => {
       this.$set(this.userChecked, user.id, false);

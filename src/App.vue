@@ -1,5 +1,5 @@
 <template>
-  <LandingPage v-if="$route.path==='/landing'" />
+  <LandingPage v-if="$route.path === '/landing'" />
   <v-app v-else>
     <v-navigation-drawer
       app
@@ -130,7 +130,7 @@ export default {
   async created() {
     try {
       this.sidebarLoading = true;
-      let { data } = await this.$axios.get("/hierarchyCategories");
+      let { data } = await this.$axios.get("/hierarchy_categories");
       this.formatCategories(data);
       this.sidebarLoading = false;
       this.setOnomasticonWords();

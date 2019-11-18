@@ -7,8 +7,13 @@
         <v-col cols="12" md="6">
           <OareSubheader>Transliteration</OareSubheader>
           <div v-for="(side, index) in sortedSides" :key="side">
-            <OareSubheader :class="{'mt-4': index === 0 ? false : true }">{{ sideText(side) }}</OareSubheader>
-            <OareListItem v-for="lineNum in sortedLineNums(side)" :key="lineNum">
+            <OareSubheader :class="{ 'mt-4': index === 0 ? false : true }">{{
+              sideText(side)
+            }}</OareSubheader>
+            <OareListItem
+              v-for="lineNum in sortedLineNums(side)"
+              :key="lineNum"
+            >
               <sup>{{ lineNum }}.</sup>
               <span class="ml-2" v-html="lineText(tabletText[side][lineNum])" />
             </OareListItem>
@@ -147,11 +152,12 @@ export default {
      */
     async getEpigraphyInfo() {
       this.loading = true;
-      let epigraphies = (await this.$axios.get(
-        `/textEpigraphies/${this.textId}`
-      )).data;
-      let discourses = (await this.$axios.get(`/discourseUnits/${this.textId}`))
-        .data;
+      let epigraphies = (
+        await this.$axios.get(`/text_epigraphies/${this.textId}`)
+      ).data;
+      let discourses = (
+        await this.$axios.get(`/discourse_units/${this.textId}`)
+      ).data;
       this.loading = false;
       this.formatEpigraphies(epigraphies, discourses);
     },
