@@ -122,7 +122,7 @@ export default {
       } else if (type === "textText") {
         this.$router.push({
           name: "epigraphies",
-          params: { textId: this.selected.textId, textName: this.selected.name }
+          params: { textId: this.selected.textId }
         });
       }
     }

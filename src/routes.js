@@ -29,7 +29,7 @@ export default [
     props: true
   },
   {
-    path: '/epigraphies/:textName/:textId',
+    path: '/epigraphies/:textId',
     name: 'epigraphies',
     component: EpigraphyView,
     props: true

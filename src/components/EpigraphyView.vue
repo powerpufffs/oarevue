@@ -1,8 +1,7 @@
 <template>
-  <OareContentView :title="textName">
-    <v-progress-linear v-if="loading" indeterminate />
-
-    <v-container v-else>
+  <v-progress-linear v-if="loading" indeterminate />
+  <OareContentView v-else :title="textName">
+    <v-container>
       <v-row>
         <v-col cols="12" md="6">
           <OareSubheader>Transliteration</OareSubheader>
@@ -84,10 +83,6 @@ export default {
       // eslint-disable-next-line
       type: Number | String,
       required: true
-    },
-    textName: {
-      type: String,
-      required: true
     }
   },
   data() {
@@ -95,7 +90,8 @@ export default {
       loading: false,
       tabletText: {},
       discourses: [],
-      sortedSides: []
+      sortedSides: [],
+      textName: ""
     };
   },
 
@@ -152,14 +148,13 @@ export default {
      */
     async getEpigraphyInfo() {
       this.loading = true;
-      let epigraphies = (
-        await this.$axios.get(`/text_epigraphies/${this.textId}`)
-      ).data;
-      let discourses = (
-        await this.$axios.get(`/discourse_units/${this.textId}`)
-      ).data;
+      let { data } = await this.$axios.get(`/text_epigraphies/${this.textId}`);
+      let { data: discourses } = await this.$axios.get(
+        `/discourse_units/${this.textId}`
+      );
       this.loading = false;
-      this.formatEpigraphies(epigraphies, discourses);
+      this.textName = data.text_name;
+      this.formatEpigraphies(data.epigraphies, discourses);
     },
 
     getDiscourseByIdHelper(discourses, id) {
