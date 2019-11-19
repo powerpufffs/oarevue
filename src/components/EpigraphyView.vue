@@ -440,7 +440,10 @@ export default {
             } else {
               reading = this.insertBracket(reading, bracket2, endPos);
             }
-          } else if (markup.markup in MARKUP_CHARACTERS) {
+          } else if (
+            markup.markup in MARKUP_CHARACTERS &&
+            markup.markup !== 11 // Temporarily don't show # markups
+          ) {
             let markupChar = MARKUP_CHARACTERS[markup.markup];
             if (markupChar.position === 1) {
               reading = reading + markupChar.reading;
