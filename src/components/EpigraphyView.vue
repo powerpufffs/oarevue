@@ -20,9 +20,12 @@
         </v-col>
         <v-col cols="12" md="6">
           <OareSubheader>Bound transcription</OareSubheader>
-          <v-treeview class="title font-weight-regular" :items="discourses">
+          <!-- <v-treeview class="title font-weight-regular" :items="discourses">
             <template v-slot:label="{ item }">{{ item.name }}</template>
-          </v-treeview>
+          </v-treeview> -->
+          <p class="title font-weight-regular">
+            {{ discourseParagraph }}
+          </p>
         </v-col>
       </v-row>
     </v-container>
@@ -108,6 +111,9 @@ export default {
   },
 
   computed: {
+    discourseParagraph() {
+      return this.discourses.map(item => item.name).join(" ");
+    },
     markupChars() {
       let chars = [];
       for (const key in MARKUP_BRACKETS) {

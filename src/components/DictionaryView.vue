@@ -20,8 +20,6 @@
 </template>
 
 <script>
-import Constants from "../constants";
-
 export default {
   name: "DictionaryView",
   props: {
