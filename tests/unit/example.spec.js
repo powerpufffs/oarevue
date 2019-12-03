@@ -2,18 +2,20 @@ import Vue from 'vue'
 import Vuetify from 'vuetify'
 import VueRouter from 'vue-router'
 import { shallowMount, createLocalVue, mount } from '@vue/test-utils'
-import LoginView from '@/components/LoginView'
+// import LoginView from '../../src/components/LoginView'
 // import mockRouter from '../mockRouter'
-import OareAppBar from '@/components/base/OareAppBar'
-import OareContentView from '@/components/base/OareContentView'
-import OareFooter from '@/components/base/OareFooter'
-import OareListItem from '@/components/base/OareListItem'
-import OareSubheader from '@/components/base/OareSubheader'
-import OareUserCard from '@/components/base/OareUserCard'
-import GroupView from '@/components/GroupView'
+import OareAppBar from '../../src/components/base/OareAppBar'
+import OareContentView from '../../src/components/base/OareContentView'
+import OareFooter from '../../src/components/base/OareFooter'
+import OareListItem from '../../src/components/base/OareListItem'
+import OareSubheader from '../../src/components/base/OareSubheader'
+import OareUserCard from '../../src/components/base/OareUserCard'
+import GroupView from '../../src/components/GroupView'
 import flushPromises from 'flush-promises'
+// import { Breakpoint } from 'vuetify/lib/services'
 // import * as utils from '@/utils/index'
 
+Vue.use(VueRouter)
 Vue.component('OareAppBar', OareAppBar)
 Vue.component('OareContentView', OareContentView)
 Vue.component('OareFooter', OareFooter)
@@ -48,6 +50,10 @@ describe('GroupView.vue', () => {
     const localVue = createLocalVue()
     localVue.use(Vuetify)
 
+    const router = new VueRouter({
+      routes: []
+    })
+
     // Create mock return values
     let groupMockReturn = {
       id: 1,
@@ -68,25 +74,35 @@ describe('GroupView.vue', () => {
 
     wrapper = mount(GroupView, {
       localVue,
+      router,
       propsData: {
         groupId: 1
       },
+      vuetify: new Vuetify({
+        mocks: {
+          $vuetify: {
+            breakpoint: {
+              height: 500
+            }
+          },
+        }
+      }),
       mocks: {
         $axios: {
           get: (path) => {
             let route = path.split('/')[1]
             switch(route) {
               case 'group':
-                return new Promise(() => { return { data: groupMockReturn }})
+                return Promise.resolve({data: groupMockReturn})
               case 'users':
-                return []
+                return Promise.resolve({data: []})
               case 'text_text':
-                return []
+                return Promise.resolve({data: []})
               case 'group_rw':
-                return {
+                return Promise.resolve({ data: {
                   group_id: 1,
                   permissions: []
-                }
+                } })
             }
           }
         }
@@ -96,8 +112,8 @@ describe('GroupView.vue', () => {
 
   it('should show correct number of rows on group table', async () => {
     expect(wrapper.isVueInstance()).toBe(true)
-    // await flushPromises()
-    // done()
+    await flushPromises()
+    // console.log(wrapper.html())
   })
   // it('should be a Vue component', () => {
   //   let wrapper = shallowMount(LoginView, createConfig())
