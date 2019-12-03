@@ -2,38 +2,6 @@
   <OareContentView title="Admin">
     <OareSubheader>Groups</OareSubheader>
 
-    <!-- <v-container v-else>
-      <v-row v-for="group in groups" :key="group.id">
-        <v-col cols="2">
-          <OareListItem>
-            <router-link :to="`/groups/${group.id}`">{{
-              group.name
-            }}</router-link>
-          </OareListItem>
-        </v-col>
-        <v-col cols="2">
-          <v-progress-circular v-if="groupsDeleted[group.id]" indeterminate />
-          <v-tooltip v-else bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                text
-                icon
-                small
-                v-on="on"
-                @click="
-                  deleteGroupId = group.id;
-                  confirmDeleteDialog = true;
-                "
-              >
-                <v-icon>mdi-delete</v-icon>
-              </v-btn>
-            </template>
-            <span>Delete</span>
-          </v-tooltip>
-        </v-col>
-      </v-row>
-    </v-container> -->
-
     <!-- Dialog for adding a new group -->
     <v-dialog v-model="addDialog" width="500">
       <template v-slot:activator="{ on }">
