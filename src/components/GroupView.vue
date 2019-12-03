@@ -304,9 +304,11 @@ export default {
   },
 
   async mounted() {
+    console.log('HEEEEEEEEEEEEY')
     let response = await this.$axios.get(`/group/${this.groupId}`);
     this.groupName = response.data.name;
     this.groupUsers = response.data.users;
+    console.log(this.groupName)
 
     response = await this.$axios.get("/users");
     this.allUsers = response.data;
