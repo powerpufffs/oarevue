@@ -1,7 +1,3 @@
-// module.exports = {
-//   preset: '@vue/cli-plugin-unit-jest'
-// }
-
 module.exports = {
   verbose: true,
   moduleFileExtensions: [
@@ -22,22 +18,7 @@ module.exports = {
       "html",
       "text-summary"
   ],
+  setupFiles: [
+      "./tests/setup.js"
+  ]
 }
-
-// module.exports = {
-//   moduleFileExtensions: ['js', 'jsx', 'json', 'vue'],
-//   transform: {
-//     '^.+\\.vue$': 'vue-jest',
-//     '.+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$':
-//       'jest-transform-stub',
-//     '^.+\\.(js|jsx)?$': 'babel-jest'
-//   },
-//   moduleNameMapper: {
-//     '^@/(.*)$': '<rootDir>/src/$1'
-//   },
-//   snapshotSerializers: ['jest-serializer-vue'],
-//   testMatch: [
-//     './tests/unit/**'
-//   ],
-//   transformIgnorePatterns: ['<rootDir>/node_modules/']
-// };

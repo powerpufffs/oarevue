@@ -1,7 +1,7 @@
 <template>
   <v-card class="mx-auto pa-md-7 pa-xs-0" max-width="100%" :class="computedClasses">
     <slot name="header"></slot>
-    <v-card-title class="display-2 font-weight-bold mb-6">{{ title }}</v-card-title>
+    <v-card-title class="display-2 font-weight-bold mb-6" data-content-title>{{ title }}</v-card-title>
     <v-card-text class="black--text">
       <slot></slot>
     </v-card-text>
